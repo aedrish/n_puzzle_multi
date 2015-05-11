@@ -16,6 +16,20 @@
         <dex dex="E:\school\AndroidSDKWS\NPuzzel\app\build\intermediates\pre-dexed\debug\classes-49dc11b24e1a40ce0c16c9d631901d33ec1395da.jar" />
     </item>
     <item
+        jar="E:\school\MAD-student-BramArts\AndroidSDKWS\NPuzzelDynamic\app\build\intermediates\exploded-aar\com.android.support\support-v4\21.0.3\classes.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="2c91c949a45a21cdecf26e03951e46c7beec9ad8">
+        <dex dex="E:\school\MAD-student-BramArts\AndroidSDKWS\NPuzzelDynamic\app\build\intermediates\pre-dexed\debug\classes-b8ee780010baba5270849b4d9afe93cbed2d374b.jar" />
+    </item>
+    <item
+        jar="E:\school\MAD-student-BramArts\AndroidSDKWS\NPuzzelDynamic\app\build\intermediates\exploded-aar\com.android.support\support-v4\21.0.3\libs\internal_impl-21.0.3.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="01ec05bfbafcc07646ba813000bf2ef11742dd03">
+        <dex dex="E:\school\MAD-student-BramArts\AndroidSDKWS\NPuzzelDynamic\app\build\intermediates\pre-dexed\debug\internal_impl-21.0.3-5f4d2096fc67bd7cb25f3ba8422bb0c8445455e5.jar" />
+    </item>
+    <item
         jar="C:\Users\bram\AppData\Local\Android\sdk\extras\android\m2repository\com\android\support\support-annotations\21.0.3\support-annotations-21.0.3.jar"
         jumboMode="false"
         revision="21.1.2"
@@ -23,11 +37,11 @@
         <dex dex="E:\school\AndroidSDKWS\NPuzzel\app\build\intermediates\pre-dexed\debug\support-annotations-21.0.3-657519584f272ea87db3d7cf4084f36d428f08ad.jar" />
     </item>
     <item
-        jar="E:\school\AndroidSDKWS\NPuzzelDynamic\app\build\intermediates\exploded-aar\com.android.support\support-v4\21.0.3\classes.jar"
+        jar="E:\school\MAD-student-BramArts\AndroidSDKWS\NPuzzelDynamic\app\build\intermediates\exploded-aar\com.android.support\appcompat-v7\21.0.3\classes.jar"
         jumboMode="false"
         revision="21.1.2"
-        sha1="2c91c949a45a21cdecf26e03951e46c7beec9ad8">
-        <dex dex="E:\school\AndroidSDKWS\NPuzzelDynamic\app\build\intermediates\pre-dexed\debug\classes-13ea0f25e2d671395ad3c68e1c494427e5c57236.jar" />
+        sha1="81d42bf983a8741f4888a6e333e454e4a5e0eeb7">
+        <dex dex="E:\school\MAD-student-BramArts\AndroidSDKWS\NPuzzelDynamic\app\build\intermediates\pre-dexed\debug\classes-a7a230ec02ad2339a959e997a81d072acc434b2c.jar" />
     </item>
     <item
         jar="E:\school\AndroidSDKWS\NPuzzelDynamic\app\build\intermediates\exploded-aar\com.android.support\support-v4\21.0.3\libs\internal_impl-21.0.3.jar"
@@ -49,6 +63,13 @@
         revision="21.1.2"
         sha1="81d42bf983a8741f4888a6e333e454e4a5e0eeb7">
         <dex dex="E:\school\AndroidSDKWS\NPuzzel\app\build\intermediates\pre-dexed\debug\classes-6bb92d1c13bfafff3cfb68b9b1f09cfe5f409f41.jar" />
+    </item>
+    <item
+        jar="E:\school\AndroidSDKWS\NPuzzelDynamic\app\build\intermediates\exploded-aar\com.android.support\support-v4\21.0.3\classes.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="2c91c949a45a21cdecf26e03951e46c7beec9ad8">
+        <dex dex="E:\school\AndroidSDKWS\NPuzzelDynamic\app\build\intermediates\pre-dexed\debug\classes-13ea0f25e2d671395ad3c68e1c494427e5c57236.jar" />
     </item>
 
 </items>

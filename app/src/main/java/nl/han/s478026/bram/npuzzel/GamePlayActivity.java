@@ -1,26 +1,30 @@
 package nl.han.s478026.bram.npuzzel;
 
-import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Point;
-import android.os.Bundle;
+import android.media.Image;
+import android.net.NetworkInfo;
 import android.os.CountDownTimer;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.os.Bundle;
 import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.Toast;
+import android.app.AlertDialog;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -33,14 +37,13 @@ import java.util.Collections;
 
 public class GamePlayActivity extends ActionBarActivity {
 
-    private Menu menu;
+
     public static final int TOAST_DURATION = 100;
     private ArrayList<CroppedImage> croppedSolvedImages = new ArrayList<>();
     private ArrayList<CroppedImage> croppedImagesInGame = new ArrayList<>();
-    private static final int DIFFICULTY_VERY_EASY = 2;
-    private static final int DIFFICULTY_EASY = 3;
-    private static final int DIFFICULTY_MEDIUM = 4;
-    private static final int DIFFICULTY_HARD = 5;
+    private static int DIFFICULTY_EASY = 3;
+    private static int DIFFICULTY_MEDIUM = 4;
+    private static int DIFFICULTY_HARD = 5;
     private Boolean clicked = false;
     private int pos1;
     private int pos2;
@@ -94,32 +97,34 @@ public class GamePlayActivity extends ActionBarActivity {
         alertDialog.setTitle(R.string.change_difficulty);
         LinearLayout dv = new LinearLayout(this);
         dv.setOrientation(LinearLayout.VERTICAL);
-        ListView list = new ListView(this);
-        final ArrayList<String> difficulty = new ArrayList<>();
-        difficulty.add("very easy");
-        difficulty.add("easy");
-        difficulty.add("medium");
-        difficulty.add("hard");
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, difficulty);
-        list.setAdapter(adapter);
-        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                numberOfTiles = getNumberOfTiles(difficulty.get(position));
-                alertDialog.dismiss();
-                start();
-            }
-        });
-        dv.addView(list);
+        Button b1 = addButton(alertDialog, getResources().getString((R.string.difficulty_easy)), DIFFICULTY_EASY);
+        Button b2 = addButton(alertDialog, getResources().getString((R.string.difficulty_medium)), DIFFICULTY_MEDIUM);
+        Button b3 = addButton(alertDialog, getResources().getString((R.string.difficulty_hard)), DIFFICULTY_HARD);
+        dv.addView(b1);
+        dv.addView(b2);
+        dv.addView(b3);
         alertDialog.setView(dv);
         alertDialog.show();
         alertDialog.setCanceledOnTouchOutside(true);
     }
 
+    private Button addButton(final AlertDialog alertDialog, String bText, final int nTiles) {
+        Button b1 = new Button(this);
+        b1.setText(bText);
+        b1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                numberOfTiles = nTiles;
+                alertDialog.dismiss();
+                start();
+            }
+        });
+        return b1;
+    }
+
+
     private void start() {
 
-        final ActionBar actionbar = getSupportActionBar();
-        actionbar.hide();
         layout = (GridView)findViewById(R.id.gridView);
         layout.setNumColumns(numberOfTiles);
         usedSteps = 0;
@@ -159,8 +164,6 @@ public class GamePlayActivity extends ActionBarActivity {
 
             @Override
             public void onFinish() {
-//                createMenu();
-                actionbar.show();
                 imageAdapter.setData(croppedImagesInGame);
                 layout.setAdapter(imageAdapter);
                 isPlaying = true;
@@ -268,8 +271,6 @@ public class GamePlayActivity extends ActionBarActivity {
 
     public int getNumberOfTiles(String difficulty) {
         switch(difficulty) {
-            case "very easy":
-                return DIFFICULTY_VERY_EASY;
             case "easy":
                 return DIFFICULTY_EASY;
             case "medium":
@@ -284,12 +285,8 @@ public class GamePlayActivity extends ActionBarActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        this.menu = menu;
-        return true;
-    }
-
-    private void createMenu() {
         getMenuInflater().inflate(R.menu.menu_detail, menu);
+        return true;
     }
 
     @Override

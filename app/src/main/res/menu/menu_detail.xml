@@ -1,7 +1,21 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="nl.han.s478026.bram.npuzzel.DetailActivity">
-    <item android:id="@+id/action_settings" android:title="@string/action_settings"
-        android:orderInCategory="100" app:showAsAction="never" />
+    tools:context="nl.han.s478026.bram.npuzzel.GamePlayActivity">
+    <item android:id="@+id/change_difficulty"
+        android:title="@string/change_difficulty"
+        android:orderInCategory="100"
+        app:showAsAction="never" />
+    <item android:id="@+id/reset_puzzle"
+        android:title="@string/reset_puzzle"
+        android:orderInCategory="110"
+        app:showAsAction="never" />
+    <item android:id="@+id/show_solution"
+        android:title="@string/show_solution"
+        android:orderInCategory="120"
+        app:showAsAction="never" />
+    <item android:id="@+id/new_puzzle"
+        android:title="@string/new_puzzle"
+        android:orderInCategory="130"
+        app:showAsAction="never" />
 </menu>
