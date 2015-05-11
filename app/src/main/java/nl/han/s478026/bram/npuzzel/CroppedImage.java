@@ -3,9 +3,7 @@ package nl.han.s478026.bram.npuzzel;
 import android.graphics.Bitmap;
 
 /**
- * @author Bram Arts
- * email: bramiejo@hotmail.com
- * Student nummer: 478026
+ * Created by bram on 30-3-2015.
  */
 public class CroppedImage {
     private Bitmap croppedImage;
@@ -25,7 +23,7 @@ public class CroppedImage {
         this.hoogte = hoogte;
         this.position = position;
         if(image != null) {
-            this.croppedImage = Bitmap.createBitmap(this.image, x * this.breedte, y * this.hoogte, this.breedte, this.hoogte);
+            this.croppedImage = Bitmap.createBitmap(this.image, y * this.breedte, x * this.hoogte, this.breedte, this.hoogte);
         }
         this.lastImage = lastImage;
     }

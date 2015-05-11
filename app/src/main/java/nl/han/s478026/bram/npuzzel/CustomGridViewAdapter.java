@@ -7,8 +7,6 @@ package nl.han.s478026.bram.npuzzel;
 import java.util.ArrayList;
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Color;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,17 +15,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 
-/**
- * @author Bram Arts
- * email: bramiejo@hotmail.com
- * Student nummer: 478026
- */
 public class CustomGridViewAdapter extends ArrayAdapter<CroppedImage> {
-    private Context context;
-    private int layoutResourceId;
-    private ArrayList<CroppedImage> data = new ArrayList<>();
-    private int width = 0;
-    private int height = 0;
+    Context context;
+    int layoutResourceId;
+    ArrayList<CroppedImage> data = new ArrayList<>();
+    int width = 0;
+    int height = 0;
 
     public CustomGridViewAdapter(Context context, int layoutResourceId, ArrayList<CroppedImage> data) {
         super(context, layoutResourceId, data);
@@ -68,20 +61,9 @@ public class CustomGridViewAdapter extends ArrayAdapter<CroppedImage> {
         holder.imageItem.setImageBitmap(item.getCroppedImage());
         holder.imageItem.setMinimumHeight(height);
         holder.imageItem.setMinimumWidth(width);
-        if(data.get(position).getCroppedImage() == null) {
-            holder.imageItem.setBackgroundColor(Color.rgb(0,0,0));
-        }
         return row;
     }
     static class RecordHolder {
         ImageView imageItem;
-    }
-
-    public void setData(ArrayList<CroppedImage> data) {
-        this.data = data;
-    }
-
-    public ArrayList<CroppedImage> getData() {
-        return data;
     }
 }
