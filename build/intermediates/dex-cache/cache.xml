@@ -23,6 +23,20 @@
         <dex dex="E:\school\MAD-student-BramArts\AndroidSDKWS\NPuzzelDynamic\app\build\intermediates\pre-dexed\debug\classes-b8ee780010baba5270849b4d9afe93cbed2d374b.jar" />
     </item>
     <item
+        jar="C:\Users\bram\.gradle\caches\modules-2\files-2.1\com.firebase\firebase-client-jvm\2.2.4\b797b9bfb5edb54473a55ece366ead72102803bc\firebase-client-jvm-2.2.4.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="b797b9bfb5edb54473a55ece366ead72102803bc">
+        <dex dex="E:\school\android\n_puzzle_multi\app\build\intermediates\pre-dexed\debug\firebase-client-jvm-2.2.4-fd8202255ff28fd75551bc07618e1583a1fa5c3a.jar" />
+    </item>
+    <item
+        jar="E:\school\android\n_puzzle_multi\firebase-client-android-2.2.4\firebase-client-android-2.2.4.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="ebf4e7781b5fa09a256dcc00e82f0a97d7a23d50">
+        <dex dex="E:\school\android\n_puzzle_multi\app\build\intermediates\pre-dexed\debug\firebase-client-android-2.2.4-553f1ec224b8e59d6f7683b99166db31f2c68788.jar" />
+    </item>
+    <item
         jar="E:\school\MAD-student-BramArts\AndroidSDKWS\NPuzzelDynamic\app\build\intermediates\exploded-aar\com.android.support\support-v4\21.0.3\libs\internal_impl-21.0.3.jar"
         jumboMode="false"
         revision="21.1.2"
@@ -44,6 +58,20 @@
         <dex dex="E:\school\MAD-student-BramArts\AndroidSDKWS\NPuzzelDynamic\app\build\intermediates\pre-dexed\debug\classes-a7a230ec02ad2339a959e997a81d072acc434b2c.jar" />
     </item>
     <item
+        jar="C:\Users\bram\.gradle\caches\modules-2\files-2.1\com.fasterxml.jackson.core\jackson-core\2.2.2\d20be6a5ddd6f8cfd36ebf6dea329873a1c41f1b\jackson-core-2.2.2.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="d20be6a5ddd6f8cfd36ebf6dea329873a1c41f1b">
+        <dex dex="E:\school\android\n_puzzle_multi\app\build\intermediates\pre-dexed\debug\jackson-core-2.2.2-d1f2157e1547ddf181c7c54d5b9a7836fcff926a.jar" />
+    </item>
+    <item
+        jar="C:\Users\bram\.gradle\caches\modules-2\files-2.1\com.firebase\tubesock\0.0.11\d37cb67277928cf59344b4196af8d9cee1f1a27c\tubesock-0.0.11.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="d37cb67277928cf59344b4196af8d9cee1f1a27c">
+        <dex dex="E:\school\android\n_puzzle_multi\app\build\intermediates\pre-dexed\debug\tubesock-0.0.11-8c01754212e0a665f021eedcb9f0e1c4f7bc93f6.jar" />
+    </item>
+    <item
         jar="E:\school\AndroidSDKWS\NPuzzelDynamic\app\build\intermediates\exploded-aar\com.android.support\support-v4\21.0.3\libs\internal_impl-21.0.3.jar"
         jumboMode="false"
         revision="21.1.2"
@@ -58,6 +86,13 @@
         <dex dex="E:\school\AndroidSDKWS\NPuzzel\app\build\intermediates\pre-dexed\debug\internal_impl-21.0.3-061a2aad486c34aadd1a1fb6e201f53e4de47305.jar" />
     </item>
     <item
+        jar="C:\Users\bram\.gradle\caches\modules-2\files-2.1\com.firebase\firebase-client-android\2.2.4\d952dbeacf5269df1d2d2321cdbb165dc37c82b3\firebase-client-android-2.2.4.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="d952dbeacf5269df1d2d2321cdbb165dc37c82b3">
+        <dex dex="E:\school\android\n_puzzle_multi\app\build\intermediates\pre-dexed\debug\firebase-client-android-2.2.4-56cf03d1016e4fb5d27657dff2fd0a39f46c2ed8.jar" />
+    </item>
+    <item
         jar="E:\school\AndroidSDKWS\NPuzzel\app\build\intermediates\exploded-aar\com.android.support\appcompat-v7\21.0.3\classes.jar"
         jumboMode="false"
         revision="21.1.2"
@@ -65,11 +100,46 @@
         <dex dex="E:\school\AndroidSDKWS\NPuzzel\app\build\intermediates\pre-dexed\debug\classes-6bb92d1c13bfafff3cfb68b9b1f09cfe5f409f41.jar" />
     </item>
     <item
+        jar="E:\school\android\n_puzzle_multi\app\build\intermediates\exploded-aar\com.android.support\support-v4\21.0.3\libs\internal_impl-21.0.3.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="01ec05bfbafcc07646ba813000bf2ef11742dd03">
+        <dex dex="E:\school\android\n_puzzle_multi\app\build\intermediates\pre-dexed\debug\internal_impl-21.0.3-602450d2dfb2a92c94e0eff754370976a4a0ff77.jar" />
+    </item>
+    <item
+        jar="E:\school\android\n_puzzle_multi\app\build\intermediates\exploded-aar\com.android.support\support-v4\21.0.3\classes.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="2c91c949a45a21cdecf26e03951e46c7beec9ad8">
+        <dex dex="E:\school\android\n_puzzle_multi\app\build\intermediates\pre-dexed\debug\classes-9cbecab8c3d3900c882accf62df1d312ad69f867.jar" />
+    </item>
+    <item
+        jar="E:\school\android\n_puzzle_multi\app\build\intermediates\exploded-aar\com.android.support\appcompat-v7\21.0.3\classes.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="81d42bf983a8741f4888a6e333e454e4a5e0eeb7">
+        <dex dex="E:\school\android\n_puzzle_multi\app\build\intermediates\pre-dexed\debug\classes-5a8df133efe1085b931319fb27f2d885cf5aa360.jar" />
+    </item>
+    <item
         jar="E:\school\AndroidSDKWS\NPuzzelDynamic\app\build\intermediates\exploded-aar\com.android.support\support-v4\21.0.3\classes.jar"
         jumboMode="false"
         revision="21.1.2"
         sha1="2c91c949a45a21cdecf26e03951e46c7beec9ad8">
         <dex dex="E:\school\AndroidSDKWS\NPuzzelDynamic\app\build\intermediates\pre-dexed\debug\classes-13ea0f25e2d671395ad3c68e1c494427e5c57236.jar" />
+    </item>
+    <item
+        jar="C:\Users\bram\.gradle\caches\modules-2\files-2.1\com.fasterxml.jackson.core\jackson-databind\2.2.2\3c8f6018eaa72d43b261181e801e6f8676c16ef6\jackson-databind-2.2.2.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="3c8f6018eaa72d43b261181e801e6f8676c16ef6">
+        <dex dex="E:\school\android\n_puzzle_multi\app\build\intermediates\pre-dexed\debug\jackson-databind-2.2.2-2ffe68ca3d2519103898402fa56baa9bfab9116b.jar" />
+    </item>
+    <item
+        jar="C:\Users\bram\.gradle\caches\modules-2\files-2.1\com.fasterxml.jackson.core\jackson-annotations\2.2.2\285cb9c666f0f0f3dd8a1be04e1f457eb7b15113\jackson-annotations-2.2.2.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="285cb9c666f0f0f3dd8a1be04e1f457eb7b15113">
+        <dex dex="E:\school\android\n_puzzle_multi\app\build\intermediates\pre-dexed\debug\jackson-annotations-2.2.2-b742407b63f37597191f2c297ddfcce8c7e49258.jar" />
     </item>
 
 </items>

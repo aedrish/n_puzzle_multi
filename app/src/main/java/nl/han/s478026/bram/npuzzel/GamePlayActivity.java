@@ -26,6 +26,8 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 import android.app.AlertDialog;
 
+import com.firebase.client.Firebase;
+
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -55,9 +57,12 @@ public class GamePlayActivity extends ActionBarActivity {
     private int height;
     private int resourceId;
     private GridView layout;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Firebase.setAndroidContext(this);
         setContentView(R.layout.activity_detail);
         Display display = getWindowManager().getDefaultDisplay();
         Point size = new Point();
@@ -244,6 +249,8 @@ public class GamePlayActivity extends ActionBarActivity {
     public Boolean changePositionImageAndUpdateLayout(GridView layout, CustomGridViewAdapter adapter, int pos1,
                                                       int pos2, boolean inGame) {
         changeImagePosition(pos1, pos2);
+        Firebase myFirebaseRef = new Firebase("https://n-puzzle-bram-daniel.firebaseio.com/");
+        myFirebaseRef.child("clicked_tile").setValue(pos1);
         adapter.setData(croppedImagesInGame);
         layout.setAdapter(adapter);
         if(inGame) {
