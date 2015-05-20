@@ -1,8 +1,9 @@
 <resources>
     <string name="app_name">NPuzzel</string>
 
-    <string name="hello_world">Hello world!</string>
+    <string name="username">Username</string>
     <string name="action_settings">Settings</string>
+
     <string name="reset_puzzle">Reset puzzle</string>
     <string name="new_puzzle">New puzzle</string>
     <string name="change_difficulty">Change difficulty</string>
