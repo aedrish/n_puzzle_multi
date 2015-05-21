@@ -41,8 +41,6 @@ public class SettingsActivity extends ActionBarActivity {
         if (sharedpreferences.contains(USERNAME))
         {
             username.setText(sharedpreferences.getString(USERNAME, "Default"));
-        } else {
-            username.setText("Default");
         }
 
         Button b = (Button) findViewById(R.id.save_button);
@@ -53,13 +51,6 @@ public class SettingsActivity extends ActionBarActivity {
                     Firebase childRef = myFirebaseRef.child("users/" + sharedpreferences.getString(USERNAME, "Default"));
                     childRef.child("name").setValue(username.getText().toString());
                     Toast.makeText(SettingsActivity.this, "not  default", Toast.LENGTH_LONG).show();
-                } else {
-                    Toast.makeText(SettingsActivity.this, "default", Toast.LENGTH_LONG).show();
-                    Firebase userRefs = myFirebaseRef.child("users");
-                    Map<String, User> users = new HashMap<String, User>();
-                    User user = new User(username.getText().toString());
-                    users.put(username.getText().toString(), user);
-                    userRefs.setValue(users);
                 }
 
                 Editor editor = sharedpreferences.edit();
