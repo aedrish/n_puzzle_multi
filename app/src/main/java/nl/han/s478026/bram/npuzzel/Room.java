@@ -6,7 +6,7 @@ import java.util.UUID;
  * Created by bram on 20-5-2015.
  */
 public class Room {
-    private UUID uid = UUID.randomUUID();
+    private String uid = UUID.randomUUID().toString();
     private int imageId;
     private User player1;
     private User player2;
@@ -39,5 +39,13 @@ public class Room {
 
     public void setImageId(int imageId) {
         this.imageId = imageId;
+    }
+
+    public String getUid() {
+        return uid;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
     }
 }
