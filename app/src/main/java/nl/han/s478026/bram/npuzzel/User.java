@@ -7,7 +7,7 @@ import java.util.UUID;
  */
 public class User {
 
-    private UUID uid = UUID.randomUUID();
+    private String uid = UUID.randomUUID().toString();
     private String name;
 
     public User(String name) {
@@ -20,5 +20,13 @@ public class User {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getUid() {
+        return uid;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
     }
 }
