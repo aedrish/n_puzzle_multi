@@ -18,4 +18,7 @@
     <string name="title_activity_detail">Play</string>
     <string name="title_activity_you_win">Congratulations!</string>
     <string name="congratsulation">Congratulations, puzzle solved!</string>
+    <string name="title_activity_settings">SettingsActivity</string>
+
+    <string name="hello_world">Hello world!</string>
 </resources>
