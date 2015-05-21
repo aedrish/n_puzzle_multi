@@ -50,7 +50,6 @@ public class SettingsActivity extends ActionBarActivity {
                 if(sharedpreferences.getString(USERNAME, "Default") != "Default") {
                     Firebase childRef = myFirebaseRef.child("users/" + sharedpreferences.getString(USERNAME, "Default"));
                     childRef.child("name").setValue(username.getText().toString());
-                    Toast.makeText(SettingsActivity.this, "not  default", Toast.LENGTH_LONG).show();
                 }
 
                 Editor editor = sharedpreferences.edit();
