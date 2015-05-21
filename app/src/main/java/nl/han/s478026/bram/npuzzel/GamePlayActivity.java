@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Point;
@@ -43,6 +44,11 @@ public class GamePlayActivity extends ActionBarActivity {
     public static final int TOAST_DURATION = 100;
     private ArrayList<CroppedImage> croppedSolvedImages = new ArrayList<>();
     private ArrayList<CroppedImage> croppedImagesInGame = new ArrayList<>();
+
+    public static final String MyPREFERENCES = "npuzzel_file";
+    public static final String USERNAME = "usernameKey";
+    private SharedPreferences sharedpreferences;
+
     private static int DIFFICULTY_EASY = 3;
     private static int DIFFICULTY_MEDIUM = 4;
     private static int DIFFICULTY_HARD = 5;
@@ -63,6 +69,7 @@ public class GamePlayActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
 
         Firebase.setAndroidContext(this);
+        sharedpreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
         setContentView(R.layout.activity_detail);
         Display display = getWindowManager().getDefaultDisplay();
         Point size = new Point();
@@ -250,7 +257,8 @@ public class GamePlayActivity extends ActionBarActivity {
                                                       int pos2, boolean inGame) {
         changeImagePosition(pos1, pos2);
         Firebase myFirebaseRef = new Firebase("https://n-puzzle-bram-daniel.firebaseio.com/");
-        myFirebaseRef.child("clicked_tile").setValue(pos1);
+        Firebase userFirebaseRef = myFirebaseRef.child("users/" + sharedpreferences.getString(USERNAME, "Default"));
+        userFirebaseRef.child("clicked_tile").setValue(pos1);
         adapter.setData(croppedImagesInGame);
         layout.setAdapter(adapter);
         if(inGame) {

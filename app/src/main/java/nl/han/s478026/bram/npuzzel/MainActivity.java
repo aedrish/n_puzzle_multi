@@ -1,6 +1,8 @@
 package nl.han.s478026.bram.npuzzel;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Point;
@@ -16,9 +18,15 @@ import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.firebase.client.Firebase;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 
 /**
@@ -28,107 +36,49 @@ import java.util.ArrayList;
  */
 public class MainActivity extends ActionBarActivity {
 
-    ArrayList<ImageItem> imageList = new ArrayList<>();
-    private static int ROWS = 1;
+    public static final String MyPREFERENCES = "npuzzel_file";
+    public static final String USERNAME = "usernameKey";
+    private Firebase myFirebaseRef;
+    private SharedPreferences sharedpreferences;
+    TextView username ;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_game_start);
-        Display display = getWindowManager().getDefaultDisplay();
-        Point size = new Point();
 
-        display.getSize(size);
-        int width = size.x;
-        int height = size.y;
+        setContentView(R.layout.activity_main);
 
-        //LinearLayout layout = (LinearLayout)findViewById(R.id.layout_container);
+        Firebase.setAndroidContext(this);
 
+        sharedpreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
+        if (sharedpreferences.contains(USERNAME))
+        {
+            Intent intent = new Intent(MainActivity.this, GameStartActivity.class);
+            startActivity(intent);
+        } else {
+            Button b = (Button) findViewById(R.id.start_screen_save);
 
-        GridView layout = (GridView)findViewById(R.id.gridView2);
-        layout.setNumColumns(ROWS);
-        layout.setScrollingCacheEnabled(false);
+            myFirebaseRef = new Firebase("https://n-puzzle-bram-daniel.firebaseio.com/");
+            username = (TextView) findViewById(R.id.start_screen_username_input);
 
-        Field[] afbeeldingResources = R.drawable.class.getFields(); //of R.drawable.class.getFields();
-        for (Field f : afbeeldingResources) {
-            if ( !f.getName().contains("abc")) {
-                try {
-                    String name = f.getName();
-                    int resourceId = f.getInt(null);
+            b.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Firebase userRefs = myFirebaseRef.child("users");
+                    Map<String, User> users = new HashMap<String, User>();
+                    User user = new User(username.getText().toString());
+                    users.put(username.getText().toString(), user);
+                    userRefs.setValue(users);
 
-                    Bitmap bitmap = BitmapFactory.decodeResource(getResources(), resourceId);
-                    ImageItem item  = new ImageItem(resourceId, name, bitmap);
-                    imageList.add(item);
-                } catch (Exception e) {
-                    Log.e("MAD", "### OOPS", e);
+                    SharedPreferences.Editor editor = sharedpreferences.edit();
+                    editor.putString(USERNAME, username.getText().toString());
+                    editor.commit();
+                    Intent intent = new Intent(MainActivity.this, GameStartActivity.class);
+                    startActivity(intent);
                 }
-            }
+            });
         }
 
-        final MainCustomGridViewAdapter imageAdapter = new MainCustomGridViewAdapter(this, R.layout.row_grid_main, imageList, ROWS, (int) (width * 0.8));
-        layout.setAdapter(imageAdapter);
-        layout.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                RadioGroup radiogroup = (RadioGroup) findViewById(R.id.radioGroup1);
-                RadioButton radioButton = (RadioButton) findViewById(radiogroup.getCheckedRadioButtonId());
-                final String difficulty = (String) radioButton.getTag();
-
-                Intent intent = new Intent(MainActivity.this, GamePlayActivity.class);
-                intent.putExtra("resourceId", imageList.get(position).getResourceId());
-                intent.putExtra("difficulty", difficulty);
-                startActivity(intent);
-            }
-        });
-    }
-
-    /*private void addViewToLayout(LinearLayout layout, String name, final int resourceId) {
-        LinearLayout l = new LinearLayout(this);
-        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.WRAP_CONTENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT,
-                LinearLayout.HORIZONTAL);
-
-        l.setLayoutParams(lp);
-
-        ImageView image =  new ImageView(this);
-
-
-        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(changePixelToDP(60), changePixelToDP(60));
-        image.setLayoutParams(layoutParams);
-        image.setImageResource(resourceId);
-        image.requestLayout();
-
-        l.addView(image);
-
-        Button button = new Button(this);
-        button.setText(name.replace("_", " "));
-
-
-        LinearLayout.LayoutParams bLayoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, changePixelToDP(60));
-        button.setLayoutParams(bLayoutParams);
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                RadioGroup radiogroup = (RadioGroup) findViewById(R.id.radioGroup1);
-                RadioButton radioButton = (RadioButton) findViewById(radiogroup.getCheckedRadioButtonId());
-                final String difficulty = (String) radioButton.getTag();
-
-                Intent intent = new Intent(MainActivity.this, GamePlayActivity.class);
-                intent.putExtra("resourceId", resourceId);
-                intent.putExtra("difficulty", difficulty);
-                startActivity(intent);
-            }
-        });
-
-        l.addView(button);
-        layout.addView(l);
-    }*/
-
-    private int changePixelToDP(int input) {
-        int pixels = (int) TypedValue.applyDimension(
-                TypedValue.COMPLEX_UNIT_DIP, 60, getResources().getDisplayMetrics());
-        return pixels;
     }
 
     @Override
@@ -145,11 +95,6 @@ public class MainActivity extends ActionBarActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
-            startActivity(intent);
-        }
 
         return super.onOptionsItemSelected(item);
     }
