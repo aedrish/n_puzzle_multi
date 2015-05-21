@@ -68,10 +68,6 @@ public class MainActivity extends ActionBarActivity {
                     Firebase userRefs = myFirebaseRef.child("users");
                     User user = new User(username.getText().toString());
                     userRefs.child(username.getText().toString()).setValue(user);
-//                    Map<String, User> users = new HashMap<String, User>();
-//                    User user = new User(username.getText().toString());
-//                    users.put(username.getText().toString(), user);
-//                    userRefs.setValue(users);
 
                     SharedPreferences.Editor editor = sharedpreferences.edit();
                     editor.putString(USERNAME, username.getText().toString());

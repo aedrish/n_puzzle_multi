@@ -255,15 +255,17 @@ public class GamePlayActivity extends ActionBarActivity {
 
     public Boolean changePositionImageAndUpdateLayout(GridView layout, CustomGridViewAdapter adapter, int pos1,
                                                       int pos2, boolean inGame) {
+        if(inGame) {
+            usedSteps++;
+        }
         changeImagePosition(pos1, pos2);
         Firebase myFirebaseRef = new Firebase("https://n-puzzle-bram-daniel.firebaseio.com/");
         Firebase userFirebaseRef = myFirebaseRef.child("users/" + sharedpreferences.getString(USERNAME, "Default"));
         userFirebaseRef.child("clicked_tile").setValue(pos1);
+        userFirebaseRef.child("usedSteps").setValue(usedSteps);
         adapter.setData(croppedImagesInGame);
         layout.setAdapter(adapter);
-        if(inGame) {
-            usedSteps++;
-        }
+
         checkWinSituation();
         return checkWinSituation();
     }
