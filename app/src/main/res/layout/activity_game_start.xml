@@ -43,7 +43,7 @@
     <GridView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/gridView2"
+        android:id="@+id/select_picture"
         android:padding="5dp"
         android:fastScrollEnabled="true"
         android:layout_marginTop="@dimen/activity_vertical_margin"
