@@ -1,6 +1,5 @@
 package nl.han.s478026.bram.npuzzel;
 
-import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -8,8 +7,6 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Point;
-import android.media.Image;
-import android.net.NetworkInfo;
 import android.os.CountDownTimer;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -17,8 +14,6 @@ import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.GridView;
@@ -62,7 +57,7 @@ public class GamePlayActivity extends ActionBarActivity {
     private int width;
     private int height;
     private int resourceId;
-    private GridView layout;
+    private GridView layout, layout2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,7 +65,7 @@ public class GamePlayActivity extends ActionBarActivity {
 
         Firebase.setAndroidContext(this);
         sharedpreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
-        setContentView(R.layout.activity_detail);
+        setContentView(R.layout.activity_gameplay);
         Display display = getWindowManager().getDefaultDisplay();
         Point size = new Point();
 
@@ -93,10 +88,10 @@ public class GamePlayActivity extends ActionBarActivity {
         solutionDialog.setTitle(R.string.solution);
         solutionDialog.setButton(DialogInterface.BUTTON_POSITIVE, getResources().getString(R.string.got_it),
                 new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-                solutionDialog.dismiss();
-            }
-        });
+                    public void onClick(DialogInterface dialog, int which) {
+                        solutionDialog.dismiss();
+                    }
+                });
         ImageView iv = new ImageView(this);
         iv.setImageResource(resourceId);
         solutionDialog.setView(iv);
@@ -137,9 +132,12 @@ public class GamePlayActivity extends ActionBarActivity {
 
     private void start() {
 
-        layout = (GridView)findViewById(R.id.gridView);
+        layout = (GridView)findViewById(R.id.player);
         layout.setNumColumns(numberOfTiles);
+//        layout2 = (GridView)findViewById(R.id.enemy);
+//        layout2.setNumColumns(numberOfTiles);
         usedSteps = 0;
+        setEnemy();
 
         Bitmap bitmap = BitmapFactory.decodeResource(getResources(), resourceId);
         int bmw;
@@ -162,8 +160,9 @@ public class GamePlayActivity extends ActionBarActivity {
         int tileWidth = bitmap.getWidth() / numberOfTiles;
         createTiles(numberOfTiles, bitmap, tileHeight, tileWidth);
 
-        final CustomGridViewAdapter imageAdapter = new CustomGridViewAdapter(this, R.layout.row_grid, croppedSolvedImages);
+        final CustomPlayerGridViewAdapter imageAdapter = new CustomPlayerGridViewAdapter(this, R.layout.row_grid, croppedSolvedImages);
         layout.setAdapter(imageAdapter);
+//        layout2.setAdapter(imageAdapter);
         CountDownTimer c = new CountDownTimer(3000, 1000) {
             int timeTillStart = 3;
             Toast p = Toast.makeText(GamePlayActivity.this, "Start in: " + timeTillStart, Toast.LENGTH_SHORT);
@@ -178,6 +177,7 @@ public class GamePlayActivity extends ActionBarActivity {
             public void onFinish() {
                 imageAdapter.setData(croppedImagesInGame);
                 layout.setAdapter(imageAdapter);
+                layout2.setAdapter(imageAdapter);
                 isPlaying = true;
             }
         };
@@ -186,7 +186,13 @@ public class GamePlayActivity extends ActionBarActivity {
         setItemClickListenerOnGridView(numberOfTiles, layout, imageAdapter, resourceId);
     }
 
-    private void setItemClickListenerOnGridView(final int numberOfTiles, final GridView layout, final CustomGridViewAdapter imageAdapter, final int resourceId) {
+    private void setEnemy() {
+        layout2 = (GridView)findViewById(R.id.enemy);
+        layout2.setNumColumns(numberOfTiles);
+
+    }
+
+    private void setItemClickListenerOnGridView(final int numberOfTiles, final GridView layout, final CustomPlayerGridViewAdapter imageAdapter, final int resourceId) {
         layout.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -253,7 +259,7 @@ public class GamePlayActivity extends ActionBarActivity {
         list.add(last);
     }
 
-    public Boolean changePositionImageAndUpdateLayout(GridView layout, CustomGridViewAdapter adapter, int pos1,
+    public Boolean changePositionImageAndUpdateLayout(GridView layout, CustomPlayerGridViewAdapter adapter, int pos1,
                                                       int pos2, boolean inGame) {
         if(inGame) {
             usedSteps++;

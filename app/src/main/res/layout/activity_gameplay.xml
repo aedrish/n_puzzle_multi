@@ -1,0 +1,44 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:id="@+id/GridPreview"
+    android:layout_gravity="center"
+    android:orientation="horizontal"
+    
+    tools:context="edu.han.ica.tim.npuzzle492791.PreviewActivity">
+
+
+    <GridView
+        android:layout_width="128dp"
+        android:layout_height="128dp"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/title"
+        android:id="@+id/enemy"/>
+
+    <GridView
+        android:layout_width="wrap_content"
+        android:layout_height="256dp"
+        android:layout_below="@+id/timer"
+        android:id="@+id/player"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Large Text"
+        android:id="@+id/timer"
+        android:layout_below="@+id/enemy"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Large Text"
+        android:id="@+id/title"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" />
+
+</RelativeLayout>
