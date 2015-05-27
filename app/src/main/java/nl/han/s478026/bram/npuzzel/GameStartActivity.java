@@ -25,6 +25,7 @@ public class GameStartActivity extends ActionBarActivity {
 
     ArrayList<ImageItem> imageList = new ArrayList<>();
     private static int ROWS = 1;
+    private String difficulty;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,8 +37,8 @@ public class GameStartActivity extends ActionBarActivity {
         int width = size.x;
         int height = size.y;
 
-        //LinearLayout layout = (LinearLayout)findViewById(R.id.layout_container);
-
+        Intent intent = getIntent();
+        difficulty = intent.getStringExtra("difficulty");
 
         GridView layout = (GridView)findViewById(R.id.gridView2);
         layout.setNumColumns(ROWS);
@@ -64,9 +65,6 @@ public class GameStartActivity extends ActionBarActivity {
         layout.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                RadioGroup radiogroup = (RadioGroup) findViewById(R.id.radioGroup);
-                RadioButton radioButton = (RadioButton) findViewById(radiogroup.getCheckedRadioButtonId());
-                final String difficulty = (String) radioButton.getTag();
 
                 Intent intent = new Intent(GameStartActivity.this, GamePlayActivity.class);
                 intent.putExtra("resourceId", imageList.get(position).getResourceId());

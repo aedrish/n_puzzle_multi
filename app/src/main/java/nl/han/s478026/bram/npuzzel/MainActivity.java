@@ -54,7 +54,9 @@ public class MainActivity extends ActionBarActivity {
         sharedpreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
         if (sharedpreferences.contains(USERNAME))
         {
-            Intent intent = new Intent(MainActivity.this, GameStartActivity.class);
+            Intent intent = new Intent(MainActivity.this, SelectDifficultyActivity.class);
+
+            intent.putExtra("username",  sharedpreferences.getString("username", "bla"));
             startActivity(intent);
             finish();
         } else {
@@ -73,13 +75,13 @@ public class MainActivity extends ActionBarActivity {
                     SharedPreferences.Editor editor = sharedpreferences.edit();
                     editor.putString(USERNAME, username.getText().toString());
                     editor.commit();
-                    Intent intent = new Intent(MainActivity.this, GameStartActivity.class);
+                    Intent intent = new Intent(MainActivity.this, SelectDifficultyActivity.class);
+                    intent.putExtra("username", username.getText().toString());
                     startActivity(intent);
                     finish();
                 }
             });
         }
-
     }
 
     @Override

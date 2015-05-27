@@ -37,6 +37,10 @@
             android:name=".GameStartActivity"
             android:label="@string/title_activity_game_start" >
         </activity>
+        <activity
+            android:name=".SelectDifficultyActivity"
+            android:label="@string/title_activity_select_difficulty" >
+        </activity>
     </application>
 
 </manifest>
