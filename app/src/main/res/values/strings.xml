@@ -31,4 +31,6 @@
     <string name="hello_world">Hello world!</string>
     <string name="start_screen">Enter your username</string>
     <string name="start_screen_save">Save</string>
+    <string name="find_opponent">Find opponent</string>
+    <string name="opponent_still_playing">Please wait until your opponent is done</string>
 </resources>
