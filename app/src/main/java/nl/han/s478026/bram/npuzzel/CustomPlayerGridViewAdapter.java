@@ -22,14 +22,14 @@ import android.widget.TextView;
  * email: bramiejo@hotmail.com
  * Student nummer: 478026
  */
-public class CustomGridViewAdapter extends ArrayAdapter<CroppedImage> {
+public class CustomPlayerGridViewAdapter extends ArrayAdapter<CroppedImage> {
     private Context context;
     private int layoutResourceId;
     private ArrayList<CroppedImage> data = new ArrayList<>();
     private int width = 0;
     private int height = 0;
 
-    public CustomGridViewAdapter(Context context, int layoutResourceId, ArrayList<CroppedImage> data) {
+    public CustomPlayerGridViewAdapter(Context context, int layoutResourceId, ArrayList<CroppedImage> data) {
         super(context, layoutResourceId, data);
         this.layoutResourceId = layoutResourceId;
         this.context = context;
