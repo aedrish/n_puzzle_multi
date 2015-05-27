@@ -64,7 +64,7 @@ public class GameStartActivity extends ActionBarActivity {
         layout.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                RadioGroup radiogroup = (RadioGroup) findViewById(R.id.radioGroup1);
+                RadioGroup radiogroup = (RadioGroup) findViewById(R.id.radioGroup);
                 RadioButton radioButton = (RadioButton) findViewById(radiogroup.getCheckedRadioButtonId());
                 final String difficulty = (String) radioButton.getTag();
 

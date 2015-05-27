@@ -56,6 +56,7 @@ public class MainActivity extends ActionBarActivity {
         {
             Intent intent = new Intent(MainActivity.this, GameStartActivity.class);
             startActivity(intent);
+            finish();
         } else {
             Button b = (Button) findViewById(R.id.start_screen_save);
 
@@ -74,6 +75,7 @@ public class MainActivity extends ActionBarActivity {
                     editor.commit();
                     Intent intent = new Intent(MainActivity.this, GameStartActivity.class);
                     startActivity(intent);
+                    finish();
                 }
             });
         }
