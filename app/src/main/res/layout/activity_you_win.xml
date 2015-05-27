@@ -15,6 +15,15 @@
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true" />
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="@string/opponent_still_playing"
+        android:id="@+id/please_wait_for_opponent"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/textView"/>
+
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -23,8 +32,8 @@
         android:layout_alignParentRight="true"
         android:id="@+id/imageViewResult"
         android:layout_centerHorizontal="true"
-        android:layout_below="@+id/textView"
-        android:layout_above="@+id/numberOfClicksUsed" />
+        android:layout_above="@+id/numberOfClicksUsed"
+        android:layout_below="@+id/please_wait_for_opponent" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -34,4 +43,5 @@
         android:id="@+id/numberOfClicksUsed"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true" />
+
 </RelativeLayout>

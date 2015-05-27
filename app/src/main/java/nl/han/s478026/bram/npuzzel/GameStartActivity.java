@@ -28,7 +28,7 @@ public class GameStartActivity extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_game_start);
+        setContentView(R.layout.activity_image_selection);
         Display display = getWindowManager().getDefaultDisplay();
         Point size = new Point();
 
@@ -64,7 +64,7 @@ public class GameStartActivity extends ActionBarActivity {
         layout.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                RadioGroup radiogroup = (RadioGroup) findViewById(R.id.radioGroup1);
+                RadioGroup radiogroup = (RadioGroup) findViewById(R.id.radioGroup);
                 RadioButton radioButton = (RadioButton) findViewById(radiogroup.getCheckedRadioButtonId());
                 final String difficulty = (String) radioButton.getTag();
 
