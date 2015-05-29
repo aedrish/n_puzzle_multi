@@ -312,7 +312,7 @@ public class GamePlayActivity extends ActionBarActivity {
         }
 
         replacefirstTwoOnOddTHenShuffle(croppedImagesInGame);
-//        replacefirstTwoOnOddTHenShuffle(enemyImagesInGame);
+        replacefirstTwoOnOddTHenShuffle(enemyImagesInGame);
     }
 
     private void replacefirstTwoOnOddTHenShuffle(ArrayList<CroppedImage> list) {
