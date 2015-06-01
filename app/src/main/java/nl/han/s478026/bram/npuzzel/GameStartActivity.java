@@ -44,7 +44,7 @@ public class GameStartActivity extends ActionBarActivity {
         layout.setNumColumns(ROWS);
         layout.setScrollingCacheEnabled(false);
 
-        Field[] afbeeldingResources = R.drawable.class.getFields(); //of R.drawable.class.getFields();
+        Field[] afbeeldingResources = R.drawable.class.getFields();
         for (Field f : afbeeldingResources) {
             if (f.getName().contains("game_")) {
                 try {
@@ -73,50 +73,6 @@ public class GameStartActivity extends ActionBarActivity {
             }
         });
     }
-
-    /*private void addViewToLayout(LinearLayout layout, String name, final int resourceId) {
-        LinearLayout l = new LinearLayout(this);
-        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.WRAP_CONTENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT,
-                LinearLayout.HORIZONTAL);
-
-        l.setLayoutParams(lp);
-
-        ImageView image =  new ImageView(this);
-
-
-        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(changePixelToDP(60), changePixelToDP(60));
-        image.setLayoutParams(layoutParams);
-        image.setImageResource(resourceId);
-        image.requestLayout();
-
-        l.addView(image);
-
-        Button button = new Button(this);
-        button.setText(name.replace("_", " "));
-
-
-        LinearLayout.LayoutParams bLayoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, changePixelToDP(60));
-        button.setLayoutParams(bLayoutParams);
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                RadioGroup radiogroup = (RadioGroup) findViewById(R.id.radioGroup1);
-                RadioButton radioButton = (RadioButton) findViewById(radiogroup.getCheckedRadioButtonId());
-                final String difficulty = (String) radioButton.getTag();
-
-                Intent intent = new Intent(MainActivity.this, GamePlayActivity.class);
-                intent.putExtra("resourceId", resourceId);
-                intent.putExtra("difficulty", difficulty);
-                startActivity(intent);
-            }
-        });
-
-        l.addView(button);
-        layout.addView(l);
-    }*/
 
     private int changePixelToDP(int input) {
         int pixels = (int) TypedValue.applyDimension(

@@ -49,6 +49,7 @@ public class SelectDifficultyActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_select_difficulty);
         locationManager  = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+//        setRemoteLocation();
 //        setLocation();
     }
 
@@ -58,16 +59,6 @@ public class SelectDifficultyActivity extends ActionBarActivity {
         if(locationListener != null) {
             locationManager.removeUpdates(locationListener);
         }
-    }
-    @Override
-    protected void onResume(){
-        super.onResume();
-//        if(wentToSettings){
-//            Log.d("Selecting", "Setting Location");
-            setLocation();
-
-//            wentToSettings = false;
-
     }
 
     @Override
@@ -99,9 +90,6 @@ public class SelectDifficultyActivity extends ActionBarActivity {
             Criteria criteria = new Criteria();
             String locationProvider = locationManager.getBestProvider(criteria, true);
             Log.d("The best provider is ", "" + locationProvider);
-
-
-
 
             locationListener = new LocationListener() {
                 public void onLocationChanged(Location location) {
@@ -178,6 +166,7 @@ public class SelectDifficultyActivity extends ActionBarActivity {
 
             @Override
             public void onClick(View view) {
+                setLocation();
                 GeoQuery geoQuery = geoFire.queryAtLocation(new GeoLocation(currentLocation.getLatitude(), currentLocation.getLongitude()), radius);
                 geoQuery.addGeoQueryEventListener(new GeoQueryEventListener() {
                     @Override
