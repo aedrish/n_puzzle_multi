@@ -65,6 +65,7 @@ public class GamePlayActivity extends ActionBarActivity {
     private GridView layout, layout2;
     private ValueEventListener eventListener;
     private CountDownTimer countDown;
+    private String enemyUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,6 +85,7 @@ public class GamePlayActivity extends ActionBarActivity {
         Intent intent = getIntent();
         resourceId = intent.getIntExtra("resourceId", 0);
         String difficulty = intent.getStringExtra("difficulty");
+        enemyUser = intent.getStringExtra("enemy");
 
         numberOfTiles = getNumberOfTiles(difficulty);
         start();
@@ -231,7 +233,7 @@ public class GamePlayActivity extends ActionBarActivity {
         final CustomPlayerGridViewAdapter imageAdapterEnemy = new CustomPlayerGridViewAdapter(this, R.layout.row_grid, enemyImagesInGame);
         layout2.setAdapter(imageAdapterEnemy);
 
-        Firebase enemy = myFirebaseRef.child("users/aedrish/clicked_tile");
+        Firebase enemy = myFirebaseRef.child("users/"+ enemyUser + "/clicked_tile");
 
             // Attach an listener to read the data at our posts reference
             eventListener = enemy.addValueEventListener(new ValueEventListener() {

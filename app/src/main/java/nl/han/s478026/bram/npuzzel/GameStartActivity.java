@@ -26,6 +26,7 @@ public class GameStartActivity extends ActionBarActivity {
     ArrayList<ImageItem> imageList = new ArrayList<>();
     private static int ROWS = 1;
     private String difficulty;
+    private String enemyUser;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,7 +39,9 @@ public class GameStartActivity extends ActionBarActivity {
         int height = size.y;
 
         Intent intent = getIntent();
+
         difficulty = intent.getStringExtra("difficulty");
+        enemyUser = intent.getStringExtra("enemy");
 
         GridView layout = (GridView)findViewById(R.id.gridView2);
         layout.setNumColumns(ROWS);
@@ -69,6 +72,7 @@ public class GameStartActivity extends ActionBarActivity {
                 Intent intent = new Intent(GameStartActivity.this, GamePlayActivity.class);
                 intent.putExtra("resourceId", imageList.get(position).getResourceId());
                 intent.putExtra("difficulty", difficulty);
+                intent.putExtra("enemy", enemyUser);
                 startActivity(intent);
             }
         });
