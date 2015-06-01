@@ -34,4 +34,8 @@
     <string name="find_opponent">Find opponent</string>
     <string name="opponent_still_playing">Please wait until your opponent is done</string>
     <string name="title_activity_select_difficulty">SelectDifficultyActivity</string>
+    <string name="no_active_location_providers">You have no location providers active, please turn on GPS or Network-based location detection</string>
+    <string name="location_settings">Go to location settings</string>
+    <string name="wait_for_location">Your location is not yet available. Please wait a moment until your location has been found</string>
+    <string name="no_location_available">No location available yet</string>
 </resources>

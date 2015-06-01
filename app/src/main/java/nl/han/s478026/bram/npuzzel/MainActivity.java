@@ -40,7 +40,7 @@ public class MainActivity extends ActionBarActivity {
         {
             Intent intent = new Intent(MainActivity.this, SelectDifficultyActivity.class);
 
-            intent.putExtra("username",  sharedpreferences.getString("username", "bla"));
+            intent.putExtra("username",  sharedpreferences.getString(USERNAME,null));
             startActivity(intent);
             finish();
         } else {
