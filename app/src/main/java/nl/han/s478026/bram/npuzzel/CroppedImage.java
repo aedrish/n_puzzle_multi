@@ -25,7 +25,7 @@ public class CroppedImage {
         this.hoogte = hoogte;
         this.position = position;
         if(image != null) {
-            this.croppedImage = Bitmap.createBitmap(this.image, x * this.breedte, y * this.hoogte, this.breedte, this.hoogte);
+            this.croppedImage = Bitmap.createBitmap(this.image, this.x * this.breedte, this.y * this.hoogte, this.breedte, this.hoogte);
         }
         this.lastImage = lastImage;
     }
@@ -89,5 +89,10 @@ public class CroppedImage {
     public boolean getLastImage() { return lastImage; }
 
     public void setLastImage(boolean lastImage) { this.lastImage = lastImage; }
+    public void recreateImage() {
+        if(image != null) {
+            this.croppedImage = Bitmap.createBitmap(this.image, this.x * this.breedte, this.y * this.hoogte, this.breedte, this.hoogte);
+        }
+    }
 
 }
