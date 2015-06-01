@@ -11,7 +11,7 @@
 
     <GridView
         android:layout_width="256dp"
-        android:layout_height="128dp"
+        android:layout_height="192dp"
         android:layout_centerHorizontal="true"
         android:layout_below="@+id/title"
         android:id="@+id/enemy"/>

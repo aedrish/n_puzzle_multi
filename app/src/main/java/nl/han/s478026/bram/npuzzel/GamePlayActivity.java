@@ -64,6 +64,7 @@ public class GamePlayActivity extends ActionBarActivity {
     private int resourceId;
     private GridView layout, layout2;
     private ValueEventListener eventListener;
+    private CountDownTimer countDown;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -138,6 +139,10 @@ public class GamePlayActivity extends ActionBarActivity {
 
 
     private void start() {
+        if(countDown != null) {
+            countDown.cancel();
+        }
+        removeClickedFromFirebase();
 
         layout = (GridView)findViewById(R.id.player);
         layout.setNumColumns(numberOfTiles);
@@ -168,7 +173,7 @@ public class GamePlayActivity extends ActionBarActivity {
         layout.setAdapter(imageAdapter);
         final TextView timer = (TextView) findViewById(R.id.timer);
         timer.setText("time remaining: " + ConvertSecondToHHMMString((int) (PLAYTIME / 1000)));
-        final CountDownTimer countDown = new  CountDownTimer(PLAYTIME, 1000) {
+        countDown = new  CountDownTimer(PLAYTIME, 1000) {
 
             public void onTick(long millisUntilFinished) {
                 timer.setText("time remaining: " + ConvertSecondToHHMMString((int) (millisUntilFinished / 1000)));
@@ -400,8 +405,14 @@ public class GamePlayActivity extends ActionBarActivity {
     protected void onDestroy() {
         super.onDestroy();
 
+        removeClickedFromFirebase();
+    }
+
+    private void removeClickedFromFirebase() {
         Firebase enemy = myFirebaseRef.child("users/aedrish/clicked_tile");
-        enemy.removeEventListener(eventListener);
+        if(eventListener != null) {
+            enemy.removeEventListener(eventListener);
+        }
         enemy.removeValue();
     }
 }
