@@ -178,6 +178,7 @@ public class SelectDifficultyActivity extends ActionBarActivity {
                             final String difficulty = (String) radioButton.getTag();
 
                             intent.putExtra("difficulty", difficulty);
+                            intent.putExtra("enemy", key);
                             startActivity(intent);
                             finish();
 
