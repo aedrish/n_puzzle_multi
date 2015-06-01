@@ -24,8 +24,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.firebase.client.Firebase;
+import com.firebase.client.FirebaseError;
 import com.firebase.geofire.GeoFire;
 import com.firebase.geofire.GeoLocation;
+import com.firebase.geofire.GeoQuery;
+import com.firebase.geofire.GeoQueryEventListener;
 
 import java.util.List;
 
@@ -35,9 +38,11 @@ public class SelectDifficultyActivity extends ActionBarActivity {
 
     private LocationManager locationManager;
     private LocationListener locationListener;
+    private Location currentLocation;
     private ProgressDialog progress;
 
     private static final int TIME_INTERVAL_FOR_LOCATION_UPDATE = 1000;
+    private double radius = 0.5;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,21 +93,22 @@ public class SelectDifficultyActivity extends ActionBarActivity {
     }
 
     private void setLocation() {
+        Intent intent = getIntent();
+        final String userName = intent.getStringExtra("username");
         if(checkIfAnyLocationProviderIsActive()) {
             Criteria criteria = new Criteria();
             String locationProvider = locationManager.getBestProvider(criteria, true);
             Log.d("The best provider is ", "" + locationProvider);
 
-            Intent intent = getIntent();
-            final String userName = intent.getStringExtra("username");
+
 
 
             locationListener = new LocationListener() {
                 public void onLocationChanged(Location location) {
+                    currentLocation = location;
                     // Called when a new location is found by the network location provider.
-                    GeoFire geoFire = new GeoFire(new Firebase("https://n-puzzle-bram-daniel.firebaseio.com/users/" + userName));
-//                        Toast.makeText(SelectDifficultyActivity.this, "Setting location: " + location.getLatitude(), Toast.LENGTH_SHORT).show();
-                    geoFire.setLocation("location", new GeoLocation(location.getLatitude(), location.getLongitude()));
+                    GeoFire geoFire = new GeoFire(new Firebase("https://n-puzzle-bram-daniel.firebaseio.com/playersWaiting"));
+                    geoFire.setLocation(userName, new GeoLocation(location.getLatitude(), location.getLongitude()));
                     progress.dismiss();
                 }
 
@@ -122,7 +128,7 @@ public class SelectDifficultyActivity extends ActionBarActivity {
         }else{
             showNoActiveProviderDialog();
         }
-        handleStartGameButton();
+        handleStartGameButton(userName);
     }
 
     private void createWaitingForLocationDialog() {
@@ -164,21 +170,50 @@ public class SelectDifficultyActivity extends ActionBarActivity {
         return b1;
     }
 
-    private void handleStartGameButton() {
+    private void handleStartGameButton(final String userName) {
         Button b = (Button) findViewById(R.id.buttonFindOpponent);
         myFirebaseRef = new Firebase("https://n-puzzle-bram-daniel.firebaseio.com/");
+        final GeoFire geoFire = new GeoFire(new Firebase("https://n-puzzle-bram-daniel.firebaseio.com/playersWaiting"));
         b.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(SelectDifficultyActivity.this, GameStartActivity.class);
-                RadioGroup radiogroup = (RadioGroup) findViewById(R.id.radioGroup);
-                RadioButton radioButton = (RadioButton) findViewById(radiogroup.getCheckedRadioButtonId());
-                final String difficulty = (String) radioButton.getTag();
+                GeoQuery geoQuery = geoFire.queryAtLocation(new GeoLocation(currentLocation.getLatitude(), currentLocation.getLongitude()), radius);
+                geoQuery.addGeoQueryEventListener(new GeoQueryEventListener() {
+                    @Override
+                    public void onKeyEntered(String key, GeoLocation location) {
+                        if (!userName.equals(key)) {
+                            Intent intent = new Intent(SelectDifficultyActivity.this, GameStartActivity.class);
+                            RadioGroup radiogroup = (RadioGroup) findViewById(R.id.radioGroup);
+                            RadioButton radioButton = (RadioButton) findViewById(radiogroup.getCheckedRadioButtonId());
+                            final String difficulty = (String) radioButton.getTag();
 
-                intent.putExtra("difficulty", difficulty);
-                startActivity(intent);
-                finish();
+                            intent.putExtra("difficulty", difficulty);
+                            startActivity(intent);
+                            finish();
+
+                            System.out.println(String.format("Key %s entered the search area at [%f,%f]", key, location.latitude, location.longitude));
+                        }
+                    }
+
+                    @Override
+                    public void onKeyExited(String key) {
+                    }
+
+                    @Override
+                    public void onKeyMoved(String key, GeoLocation location) {
+                    }
+
+                    @Override
+                    public void onGeoQueryReady() {
+                    }
+
+                    @Override
+                    public void onGeoQueryError(FirebaseError error) {
+                    }
+
+
+                });
             }
         });
     }
