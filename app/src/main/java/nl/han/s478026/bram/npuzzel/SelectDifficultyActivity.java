@@ -85,13 +85,13 @@ public class SelectDifficultyActivity extends ActionBarActivity {
         locationListener = new LocationListener() {
             public void onLocationChanged(Location location) {
                 // Called when a new location is found by the network location provider.
-//                GeoFire geoFire = new GeoFire(new Firebase("https://n-puzzle-bram-daniel.firebaseio.com/users/" + userName));
+                GeoFire geoFire = new GeoFire(new Firebase("https://n-puzzle-bram-daniel.firebaseio.com/users/" + userName));
 
                 if (location == null) {
                     Toast.makeText(SelectDifficultyActivity.this, "failed", Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(SelectDifficultyActivity.this, "Setting location: " + location.getLatitude(), Toast.LENGTH_SHORT).show();
-//                    geoFire.setLocation("firebase-hq", new GeoLocation(location.getLatitude(), location.getLongitude()));
+                    geoFire.setLocation("firebase-hq", new GeoLocation(location.getLatitude(), location.getLongitude()));
                 }
             }
 
@@ -108,7 +108,7 @@ public class SelectDifficultyActivity extends ActionBarActivity {
         locationManager.requestLocationUpdates(locationProvider, TIME_INTERVAL_FOR_LOCATION_UPDATE, 0 , locationListener);
 
         Button b = (Button) findViewById(R.id.buttonFindOpponent);
-//        myFirebaseRef = new Firebase("https://n-puzzle-bram-daniel.firebaseio.com/");
+        myFirebaseRef = new Firebase("https://n-puzzle-bram-daniel.firebaseio.com/");
         b.setOnClickListener(new View.OnClickListener() {
 
             @Override
