@@ -41,17 +41,18 @@ public class SelectDifficultyActivity extends ActionBarActivity {
     private Location currentLocation;
     private ProgressDialog progress;
 
-    private static final int TIME_INTERVAL_FOR_LOCATION_UPDATE = 1000;
+    private static final int TIME_INTERVAL_FOR_LOCATION_UPDATE = 100;
     private double radius = 0.5;
+    private boolean searchingForOpponent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_select_difficulty);
         locationManager  = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-//        setRemoteLocation();
-//        setLocation();
     }
+
+
 
     @Override
     protected void onDestroy(){
@@ -62,10 +63,9 @@ public class SelectDifficultyActivity extends ActionBarActivity {
     }
 
     @Override
-    protected void onResume(){
+    protected void onResume() {
         super.onResume();
-        setLocation();
-
+        setRemoteLocation();
     }
 
     @Override
@@ -90,41 +90,45 @@ public class SelectDifficultyActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    
+    private void setRemoteLocation() {
+        Intent intent = getIntent();
+        final String userName = intent.getStringExtra("username");
+        Log.d("Username = ", " " + userName);
+        if(!checkIfAnyLocationProviderIsActive()) {
+            showNoActiveProviderDialog();
+        }else{
+            setLocation();
+            handleStartGameButton(userName);
+        }
+    }
+
     private void setLocation() {
         Intent intent = getIntent();
         final String userName = intent.getStringExtra("username");
-        if(checkIfAnyLocationProviderIsActive()) {
-            Criteria criteria = new Criteria();
-            String locationProvider = locationManager.getBestProvider(criteria, true);
-            Log.d("The best provider is ", "" + locationProvider);
 
-            locationListener = new LocationListener() {
-                public void onLocationChanged(Location location) {
+        Criteria criteria = new Criteria();
+        String locationProvider = locationManager.getBestProvider(criteria, true);
+        Log.d("The best provider is ", "" + locationProvider);
+
+        locationListener = new LocationListener() {
+            public void onLocationChanged(Location location) {
                     currentLocation = location;
                     // Called when a new location is found by the network location provider.
-                    GeoFire geoFire = new GeoFire(new Firebase("https://n-puzzle-bram-daniel.firebaseio.com/playersWaiting"));
-                    geoFire.setLocation(userName, new GeoLocation(location.getLatitude(), location.getLongitude()));
                     progress.dismiss();
-                }
+            }
 
-                public void onStatusChanged(String provider, int status, Bundle extras) {
-                }
+            public void onStatusChanged(String provider, int status, Bundle extras) {
+            }
 
-                public void onProviderEnabled(String provider) {
-                }
+            public void onProviderEnabled(String provider) {
+            }
 
-                public void onProviderDisabled(String provider) {
-                }
-            };
+            public void onProviderDisabled(String provider) {
+            }
+        };
 
-            locationManager.requestLocationUpdates(locationProvider, TIME_INTERVAL_FOR_LOCATION_UPDATE, 0, locationListener);
-
-            createWaitingForLocationDialog();
-        }else{
-            showNoActiveProviderDialog();
-        }
-        handleStartGameButton(userName);
+        locationManager.requestLocationUpdates(locationProvider, TIME_INTERVAL_FOR_LOCATION_UPDATE, 0, locationListener);
+        createWaitingForLocationDialog();
     }
 
     private void createWaitingForLocationDialog() {
@@ -133,7 +137,6 @@ public class SelectDifficultyActivity extends ActionBarActivity {
         progress.setMessage(getString(R.string.wait_for_location));
         progress.show();
     }
-
 
     private void showNoActiveProviderDialog() {
         final AlertDialog alertDialog = new AlertDialog.Builder(this).create();
@@ -149,8 +152,6 @@ public class SelectDifficultyActivity extends ActionBarActivity {
         alertDialog.show();
         alertDialog.setCanceledOnTouchOutside(true);
     }
-
-
 
     private Button addDialogButton(final AlertDialog alertDialog, String text){
         Button b1 = new Button(this);
@@ -174,8 +175,11 @@ public class SelectDifficultyActivity extends ActionBarActivity {
 
             @Override
             public void onClick(View view) {
-                setLocation();
-                GeoQuery geoQuery = geoFire.queryAtLocation(new GeoLocation(currentLocation.getLatitude(), currentLocation.getLongitude()), radius);
+                GeoFire geoFire = new GeoFire(new Firebase("https://n-puzzle-bram-daniel.firebaseio.com/playersWaiting"));
+                geoFire.setLocation(userName, new GeoLocation(currentLocation.getLatitude(), currentLocation.getLongitude()));
+
+
+                final GeoQuery geoQuery = geoFire.queryAtLocation(new GeoLocation(currentLocation.getLatitude(), currentLocation.getLongitude()), radius);
                 geoQuery.addGeoQueryEventListener(new GeoQueryEventListener() {
                     @Override
                     public void onKeyEntered(String key, GeoLocation location) {
@@ -188,6 +192,7 @@ public class SelectDifficultyActivity extends ActionBarActivity {
                             intent.putExtra("difficulty", difficulty);
                             intent.putExtra("enemy", key);
                             startActivity(intent);
+                            geoQuery.removeAllListeners();
                             finish();
 
                             System.out.println(String.format("Key %s entered the search area at [%f,%f]", key, location.latitude, location.longitude));
