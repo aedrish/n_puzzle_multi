@@ -29,7 +29,6 @@ import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.firebase.client.ValueEventListener;
 
-import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -44,8 +43,6 @@ import java.util.TimeZone;
 
 public class GamePlayActivity extends ActionBarActivity {
 
-
-    public static final int TOAST_DURATION = 100;
     private ArrayList<CroppedImage> croppedSolvedImages = new ArrayList<>();
     private ArrayList<CroppedImage> croppedImagesInGame = new ArrayList<>();
     private ArrayList<CroppedImage> enemyImagesInGame = new ArrayList<>();
@@ -59,17 +56,14 @@ public class GamePlayActivity extends ActionBarActivity {
     private static int DIFFICULTY_EASY = 3;
     private static int DIFFICULTY_MEDIUM = 4;
     private static int DIFFICULTY_HARD = 5;
-    private Boolean clicked = false;
-    private int pos1;
-    private int pos2;
     private int usedSteps = 0;
     private boolean isPlaying = false;
-    private int numberOfSteps = 0;
     private int numberOfTiles = 0;
     private int width;
     private int height;
     private int resourceId;
     private GridView layout, layout2;
+    private ValueEventListener eventListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -148,7 +142,6 @@ public class GamePlayActivity extends ActionBarActivity {
         layout = (GridView)findViewById(R.id.player);
         layout.setNumColumns(numberOfTiles);
         usedSteps = 0;
-        setEnemy();
 
         Bitmap bitmap = BitmapFactory.decodeResource(getResources(), resourceId);
         int bmw;
@@ -173,7 +166,6 @@ public class GamePlayActivity extends ActionBarActivity {
 
         final CustomPlayerGridViewAdapter imageAdapter = new CustomPlayerGridViewAdapter(this, R.layout.row_grid, croppedSolvedImages);
         layout.setAdapter(imageAdapter);
-
         final TextView timer = (TextView) findViewById(R.id.timer);
         timer.setText("time remaining: " + ConvertSecondToHHMMString((int) (PLAYTIME / 1000)));
         final CountDownTimer countDown = new  CountDownTimer(PLAYTIME, 1000) {
@@ -187,6 +179,8 @@ public class GamePlayActivity extends ActionBarActivity {
             }
         };
 
+
+        setEnemy();
         CountDownTimer c = new CountDownTimer(3000, 1000) {
             public void onTick(long millisUntilFinished) {
                 Toast.makeText(GamePlayActivity.this, "Start in: " + millisUntilFinished / 1000, Toast.LENGTH_SHORT).show();
@@ -212,7 +206,7 @@ public class GamePlayActivity extends ActionBarActivity {
         TimeZone tz = TimeZone.getTimeZone("UTC");
         SimpleDateFormat df = new SimpleDateFormat("mm:ss");
         df.setTimeZone(tz);
-        String time = df.format(new Date(secondtTime*1000L));
+        String time = df.format(new Date(secondtTime * 1000L));
 
         return time;
 
@@ -222,27 +216,36 @@ public class GamePlayActivity extends ActionBarActivity {
         layout2 = (GridView)findViewById(R.id.enemy);
         layout2.setNumColumns(numberOfTiles);
 
+        ArrayList<CroppedImage> test = new ArrayList<>();
+        for(CroppedImage item: enemyImagesInGame) {
+            item.setHoogte(50);
+            item.recreateImage();
+            test.add(item);
+        }
+        Collections.copy(enemyImagesInGame, test);
         final CustomPlayerGridViewAdapter imageAdapterEnemy = new CustomPlayerGridViewAdapter(this, R.layout.row_grid, enemyImagesInGame);
         layout2.setAdapter(imageAdapterEnemy);
 
         Firebase enemy = myFirebaseRef.child("users/aedrish/clicked_tile");
+
             // Attach an listener to read the data at our posts reference
-        enemy.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot snapshot) {
-                long test = (long) snapshot.getValue();
-                Pair p = CheckSwitchPosition((int) test, numberOfTiles);
-                changeImagePosition(enemyImagesInGame, (int) test, (int) p.second);
-                imageAdapterEnemy.setData(enemyImagesInGame);
-                layout2.setAdapter(imageAdapterEnemy);
+            eventListener = enemy.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot snapshot) {
+                    if(snapshot.getValue() != null) {
+                        long test = (long) snapshot.getValue();
+                        Pair p = CheckSwitchPosition((int) test, numberOfTiles, enemyImagesInGame);
+                        changeImagePosition(enemyImagesInGame, (int) test, (int) p.second);
+                        imageAdapterEnemy.setData(enemyImagesInGame);
+                        layout2.setAdapter(imageAdapterEnemy);
+                    }
+                }
 
-            }
-
-            @Override
-            public void onCancelled(FirebaseError firebaseError) {
-                System.out.println("The read failed: " + firebaseError.getMessage());
-            }
-        });
+                @Override
+                public void onCancelled(FirebaseError firebaseError) {
+                    System.out.println("The read failed: " + firebaseError.getMessage());
+                }
+            });
 
     }
 
@@ -252,7 +255,7 @@ public class GamePlayActivity extends ActionBarActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 if(isPlaying) {
                     boolean canBeSwitched = false;
-                    Pair p = CheckSwitchPosition(position, numberOfTiles);
+                    Pair p = CheckSwitchPosition(position, numberOfTiles, croppedImagesInGame);
                     if ((boolean) p.first) {
                         if (changePositionImageAndUpdateLayout(layout, imageAdapter, position, (Integer) p.second, isPlaying)) {
                             isPlaying = false;
@@ -267,12 +270,12 @@ public class GamePlayActivity extends ActionBarActivity {
     });
     }
 
-    private Pair CheckSwitchPosition(int position, int numberOfTiles) {
+    private Pair CheckSwitchPosition(int position, int numberOfTiles, ArrayList<CroppedImage> list) {
         boolean canBeSwitched = false;
         int pos2 = 0;
         int i = 0;
-        if (!croppedImagesInGame.get(position).getLastImage()) {
-            for (CroppedImage item : croppedImagesInGame) {
+        if (!list.get(position).getLastImage()) {
+            for (CroppedImage item : list) {
                 if (item.getLastImage()) {
                     pos2 = i;
                     if (pos2 == position - 1 && position % numberOfTiles != 0) {
@@ -393,5 +396,12 @@ public class GamePlayActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
 
+        Firebase enemy = myFirebaseRef.child("users/aedrish/clicked_tile");
+        enemy.removeEventListener(eventListener);
+        enemy.removeValue();
+    }
 }

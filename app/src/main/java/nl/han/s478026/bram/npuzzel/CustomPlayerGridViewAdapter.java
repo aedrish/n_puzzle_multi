@@ -53,7 +53,7 @@ public class CustomPlayerGridViewAdapter extends ArrayAdapter<CroppedImage> {
     public View getView(int position, View convertView, ViewGroup parent)
     {
         View row = convertView;
-        RecordHolder holder = null;
+        RecordHolder holder;
         if (row == null) {
             LayoutInflater inflater = ((Activity) context).getLayoutInflater();
             row = inflater.inflate(layoutResourceId, parent, false);
