@@ -46,7 +46,7 @@ public class GameStartActivity extends ActionBarActivity {
 
         Field[] afbeeldingResources = R.drawable.class.getFields(); //of R.drawable.class.getFields();
         for (Field f : afbeeldingResources) {
-            if ( !f.getName().contains("abc")) {
+            if (f.getName().contains("game_")) {
                 try {
                     String name = f.getName();
                     int resourceId = f.getInt(null);
