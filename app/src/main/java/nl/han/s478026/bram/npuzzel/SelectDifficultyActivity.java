@@ -62,6 +62,13 @@ public class SelectDifficultyActivity extends ActionBarActivity {
     }
 
     @Override
+    protected void onResume(){
+        super.onResume();
+        setLocation();
+
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_select_difficulty, menu);
@@ -83,6 +90,7 @@ public class SelectDifficultyActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    
     private void setLocation() {
         Intent intent = getIntent();
         final String userName = intent.getStringExtra("username");
