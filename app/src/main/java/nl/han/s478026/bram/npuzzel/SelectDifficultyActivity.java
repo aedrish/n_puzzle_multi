@@ -187,13 +187,12 @@ public class SelectDifficultyActivity extends ActionBarActivity {
                         enemyRef.addValueEventListener(new ValueEventListener() {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
-                                Log.d("Difficulty is", "" + dataSnapshot.getValue());
-                                String enemyDifficulty = dataSnapshot.getValue().toString();
+                                String enemyDifficulty = (String) dataSnapshot.getValue();
                                 if (!userName.equals(key)&& enemyDifficulty.equals(difficulty)) {
                                     intent.putExtra("enemy", key);
                                     startActivity(intent);
                                     geoQuery.removeAllListeners();
-//                            geoFire.removeLocation(userName);
+                            geoFire.removeLocation(userName);
                                     finish();
                                 }
                             }
