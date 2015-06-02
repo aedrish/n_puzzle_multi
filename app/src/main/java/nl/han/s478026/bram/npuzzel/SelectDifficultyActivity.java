@@ -170,14 +170,13 @@ public class SelectDifficultyActivity extends ActionBarActivity {
     private void handleStartGameButton(final String userName) {
         Button b = (Button) findViewById(R.id.buttonFindOpponent);
         myFirebaseRef = new Firebase("https://n-puzzle-bram-daniel.firebaseio.com/");
-        final GeoFire geoFire = new GeoFire(new Firebase("https://n-puzzle-bram-daniel.firebaseio.com/playersWaiting"));
+
         b.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View view) {
-                GeoFire geoFire = new GeoFire(new Firebase("https://n-puzzle-bram-daniel.firebaseio.com/playersWaiting"));
+                final GeoFire geoFire = new GeoFire(new Firebase("https://n-puzzle-bram-daniel.firebaseio.com/playersWaiting"));
                 geoFire.setLocation(userName, new GeoLocation(currentLocation.getLatitude(), currentLocation.getLongitude()));
-
 
                 final GeoQuery geoQuery = geoFire.queryAtLocation(new GeoLocation(currentLocation.getLatitude(), currentLocation.getLongitude()), radius);
                 geoQuery.addGeoQueryEventListener(new GeoQueryEventListener() {
@@ -193,9 +192,8 @@ public class SelectDifficultyActivity extends ActionBarActivity {
                             intent.putExtra("enemy", key);
                             startActivity(intent);
                             geoQuery.removeAllListeners();
+                            geoFire.removeLocation(userName);
                             finish();
-
-                            System.out.println(String.format("Key %s entered the search area at [%f,%f]", key, location.latitude, location.longitude));
                         }
                     }
 
@@ -214,8 +212,6 @@ public class SelectDifficultyActivity extends ActionBarActivity {
                     @Override
                     public void onGeoQueryError(FirebaseError error) {
                     }
-
-
                 });
             }
         });
