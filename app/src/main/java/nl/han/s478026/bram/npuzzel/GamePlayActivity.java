@@ -67,10 +67,10 @@ public class GamePlayActivity extends ActionBarActivity {
     private int height;
     private int resourceId;
     private GridView layout, layout2;
-    private ValueEventListener eventListener;
+    private ValueEventListener eventListener, eventListenerWin;
     private CountDownTimer countDown;
     private String enemyUser;
-    private Boolean enemyIsFinished;
+    private Boolean enemyIsFinished = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -285,20 +285,22 @@ public class GamePlayActivity extends ActionBarActivity {
 //                            intent.putExtra("resourceId", resourceId);
 //                            intent.putExtra("usedSteps", usedSteps);
 //                            startActivity(intent);
-                            Firebase isDone = myFirebaseRef.child("users/" + enemyUser + "/finished");
+                            final Firebase isDone = myFirebaseRef.child("users/" + enemyUser + "/finished");
                             isDone.setValue("true");
 
                             Firebase enemyIsFinishedListener = myFirebaseRef.child("users/"+ enemyUser + "/finished");
 
                             // Attach an listener to read the data at our posts reference
-                            eventListener = enemyIsFinishedListener.addValueEventListener(new ValueEventListener() {
+                            eventListenerWin = enemyIsFinishedListener.addValueEventListener(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(DataSnapshot snapshot) {
                                     if(snapshot.getValue() != null) {
                                         Boolean isEnemyFinished = (Boolean) snapshot.getValue();
                                         if(isEnemyFinished && !isPlaying) {
                                             Toast.makeText(GamePlayActivity.this, "both stopped!", Toast.LENGTH_LONG).show();
+                                            isDone.removeEventListener(eventListenerWin);
                                         } else if(isEnemyFinished) {
+                                            isDone.removeEventListener(eventListenerWin);
                                             enemyIsFinished = true;
                                         }
                                     }
@@ -312,8 +314,8 @@ public class GamePlayActivity extends ActionBarActivity {
 
                             if(!isPlaying && enemyIsFinished) {
                                 Toast.makeText(GamePlayActivity.this, "both stopped but you stopped last!", Toast.LENGTH_LONG).show();
+                                isDone.removeEventListener(eventListenerWin);
                             }
-
                         }
                     }
                 }
