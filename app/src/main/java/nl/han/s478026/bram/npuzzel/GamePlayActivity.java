@@ -285,7 +285,7 @@ public class GamePlayActivity extends ActionBarActivity {
 //                            intent.putExtra("resourceId", resourceId);
 //                            intent.putExtra("usedSteps", usedSteps);
 //                            startActivity(intent);
-                            final Firebase isDone = myFirebaseRef.child("users/" + enemyUser + "/finished");
+                            final Firebase isDone = myFirebaseRef.child("users/" + sharedpreferences.getString(USERNAME,null) + "/finished");
                             isDone.setValue("true");
 
                             Firebase enemyIsFinishedListener = myFirebaseRef.child("users/"+ enemyUser + "/finished");
