@@ -295,11 +295,11 @@ public class GamePlayActivity extends ActionBarActivity {
                                 @Override
                                 public void onDataChange(DataSnapshot snapshot) {
                                     if(snapshot.getValue() != null) {
-                                        Boolean isEnemyFinished = (Boolean) snapshot.getValue();
-                                        if(isEnemyFinished && !isPlaying) {
+                                        String isEnemyFinished = (String) snapshot.getValue();
+                                        if(isEnemyFinished == "true" && !isPlaying) {
                                             Toast.makeText(GamePlayActivity.this, "both stopped!", Toast.LENGTH_LONG).show();
                                             isDone.removeEventListener(eventListenerWin);
-                                        } else if(isEnemyFinished) {
+                                        } else if(isEnemyFinished == "true") {
                                             isDone.removeEventListener(eventListenerWin);
                                             enemyIsFinished = true;
                                         }
