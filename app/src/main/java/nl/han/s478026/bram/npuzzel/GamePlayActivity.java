@@ -50,9 +50,13 @@ public class GamePlayActivity extends ActionBarActivity {
     private ArrayList<CroppedImage> croppedImagesInGame = new ArrayList<>();
     private ArrayList<CroppedImage> enemyImagesInGame = new ArrayList<>();
 
+    private static final int SCOREPERSEC = 10;
+    private static final int SCORECOSTPERMOVE = 10;
+
     public static final String MyPREFERENCES = "npuzzel_file";
     public static final String USERNAME = "usernameKey";
-    private static final int PLAYTIME = 60*1000*10;
+    private static final int PLAYTIME = 60*1000;
+    private int minutes;
     private SharedPreferences sharedpreferences;
     private Firebase myFirebaseRef;
 
@@ -72,6 +76,8 @@ public class GamePlayActivity extends ActionBarActivity {
     private String enemyUser;
     private Boolean enemyIsFinished = false;
     private Firebase isDone;
+    private String userName = sharedpreferences.getString(USERNAME, null);
+    private int timeLeft;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -191,10 +197,11 @@ public class GamePlayActivity extends ActionBarActivity {
         final CustomPlayerGridViewAdapter imageAdapter = new CustomPlayerGridViewAdapter(this, R.layout.row_grid, croppedSolvedImages);
         layout.setAdapter(imageAdapter);
         final TextView timer = (TextView) findViewById(R.id.timer);
-        timer.setText("time remaining: " + ConvertSecondToHHMMString((int) (PLAYTIME / 1000)));
-        countDown = new  CountDownTimer(PLAYTIME, 1000) {
+        timer.setText("time remaining: " + ConvertSecondToHHMMString((PLAYTIME * minutes / 1000)));
+        countDown = new  CountDownTimer(PLAYTIME * minutes, 1000) {
 
             public void onTick(long millisUntilFinished) {
+                timeLeft = (int) millisUntilFinished / 1000;
                 timer.setText("time remaining: " + ConvertSecondToHHMMString((int) (millisUntilFinished / 1000)));
             }
 
@@ -250,7 +257,7 @@ public class GamePlayActivity extends ActionBarActivity {
         final CustomPlayerGridViewAdapter imageAdapterEnemy = new CustomPlayerGridViewAdapter(this, R.layout.row_grid, enemyImagesInGame);
         layout2.setAdapter(imageAdapterEnemy);
 
-        Firebase enemy = myFirebaseRef.child("users/"+ enemyUser + "/clicked_tile");
+        Firebase enemy = myFirebaseRef.child("users/" + enemyUser + "/clicked_tile");
 
             // Attach an listener to read the data at our posts reference
             eventListener = enemy.addValueEventListener(new ValueEventListener() {
@@ -286,8 +293,12 @@ public class GamePlayActivity extends ActionBarActivity {
 //                            intent.putExtra("resourceId", resourceId);
 //                            intent.putExtra("usedSteps", usedSteps);
 //                            startActivity(intent);
-                            isDone = myFirebaseRef.child("users/" + sharedpreferences.getString(USERNAME,null) + "/finished");
+                            isDone = myFirebaseRef.child("users/" + userName + "/finished");
                             isDone.setValue("true");
+
+                            Firebase setPlayerScore = myFirebaseRef.child("users/" + userName + "/score");
+                            int score = calculateScore();
+                            setPlayerScore.setValue(score);
 
                             Firebase enemyIsFinishedListener = myFirebaseRef.child("users/"+ enemyUser + "/finished");
 
@@ -320,6 +331,14 @@ public class GamePlayActivity extends ActionBarActivity {
                 }
             }
     });
+    }
+
+    private int calculateScore() {
+        return (timeLeft * SCOREPERSEC) - usedSteps * SCORECOSTPERMOVE;
+    }
+
+    public void playersBothStopped() {
+        
     }
 
     private Pair CheckSwitchPosition(int position, int numberOfTiles, ArrayList<CroppedImage> list) {
@@ -415,15 +434,19 @@ public class GamePlayActivity extends ActionBarActivity {
 
     public int getNumberOfTiles(String difficulty) {
         switch(difficulty) {
-            case "easy":
-                return DIFFICULTY_EASY;
             case "very easy":
                 return DIFFICULTY_VERY_EASY;
+            case "easy":
+                minutes = 10;
+                return DIFFICULTY_EASY;
             case "medium":
+                minutes = 15;
                 return DIFFICULTY_MEDIUM;
             case "hard":
+                minutes = 20;
                 return DIFFICULTY_HARD;
             default:
+                minutes = 15;
                 return DIFFICULTY_MEDIUM;
         }
     }
