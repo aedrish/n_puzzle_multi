@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Point;
 import android.os.CountDownTimer;
+import android.support.v4.widget.ListViewAutoScrollHelper;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Pair;
@@ -16,10 +17,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.app.AlertDialog;
@@ -113,13 +116,23 @@ public class GamePlayActivity extends ActionBarActivity {
         final AlertDialog alertDialog = new AlertDialog.Builder(this).create();
         alertDialog.setTitle(R.string.change_difficulty);
         LinearLayout dv = new LinearLayout(this);
-        dv.setOrientation(LinearLayout.VERTICAL);
-        Button b1 = addButton(alertDialog, getResources().getString((R.string.difficulty_easy)), DIFFICULTY_EASY);
-        Button b2 = addButton(alertDialog, getResources().getString((R.string.difficulty_medium)), DIFFICULTY_MEDIUM);
-        Button b3 = addButton(alertDialog, getResources().getString((R.string.difficulty_hard)), DIFFICULTY_HARD);
-        dv.addView(b1);
-        dv.addView(b2);
-        dv.addView(b3);
+
+        ListView list = new ListView(this);
+        final ArrayList<String> difficulty = new ArrayList<>();
+        difficulty.add("easy");
+        difficulty.add("medium");
+        difficulty.add("hard");
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, difficulty);
+        list.setAdapter(adapter);
+        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                numberOfTiles = getNumberOfTiles(difficulty.get(position));
+                alertDialog.dismiss();
+                start();
+            }
+        });
+        dv.addView(list);
         alertDialog.setView(dv);
         alertDialog.show();
         alertDialog.setCanceledOnTouchOutside(true);
@@ -344,7 +357,9 @@ public class GamePlayActivity extends ActionBarActivity {
         userFirebaseRef.child("clicked_tile").setValue(pos1);
         userFirebaseRef.child("usedSteps").setValue(usedSteps);
         adapter.setData(croppedImagesInGame);
-        layout.setAdapter(adapter);
+        adapter.notifyDataSetChanged();
+        layout.invalidateViews();
+//        layout.setAdapter(adapter);
 
         checkWinSituation();
         return checkWinSituation();
