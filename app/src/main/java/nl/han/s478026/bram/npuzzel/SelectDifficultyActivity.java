@@ -36,7 +36,7 @@ public class SelectDifficultyActivity extends ActionBarActivity {
 
     private LocationManager locationManager;
     private LocationListener locationListener;
-    private Location currentLocation;
+    private Location currentLocation = null;
     private ProgressDialog progress;
 
     private static final int TIME_INTERVAL_FOR_LOCATION_UPDATE = 100;
@@ -90,7 +90,6 @@ public class SelectDifficultyActivity extends ActionBarActivity {
     private void setRemoteLocation() {
         Intent intent = getIntent();
         final String userName = intent.getStringExtra("username");
-        Log.d("Username = ", " " + userName);
         if(!checkIfAnyLocationProviderIsActive()) {
             showNoActiveProviderDialog();
         }else{
@@ -106,9 +105,12 @@ public class SelectDifficultyActivity extends ActionBarActivity {
 
         locationListener = new LocationListener() {
             public void onLocationChanged(Location location) {
-                    currentLocation = location;
-                    // Called when a new location is found by the network location provider.
+                if (currentLocation == null) {
                     progress.dismiss();
+                }
+                currentLocation = location;
+                    Log.d("Dismissing progress", " now");
+
             }
 
             public void onStatusChanged(String provider, int status, Bundle extras) {
@@ -122,13 +124,13 @@ public class SelectDifficultyActivity extends ActionBarActivity {
         };
 
         locationManager.requestLocationUpdates(locationProvider, TIME_INTERVAL_FOR_LOCATION_UPDATE, 0, locationListener);
-        createWaitingForLocationDialog();
+        createWaitingDialog(getString(R.string.no_location_available), getString(R.string.wait_for_location));
     }
 
-    private void createWaitingForLocationDialog() {
+    private void createWaitingDialog(String title, String message) {
         progress = new ProgressDialog(this);
-        progress.setTitle(R.string.no_location_available);
-        progress.setMessage(getString(R.string.wait_for_location));
+        progress.setTitle(title);
+        progress.setMessage(message);
         progress.show();
     }
 
@@ -170,6 +172,7 @@ public class SelectDifficultyActivity extends ActionBarActivity {
 
             @Override
             public void onClick(View view) {
+                createWaitingDialog(getString(R.string.searching_opponent), getString(R.string.locating_opponent));
                 geoFire.setLocation(userName, new GeoLocation(currentLocation.getLatitude(), currentLocation.getLongitude()));
                 final GeoQuery geoQuery = geoFire.queryAtLocation(new GeoLocation(currentLocation.getLatitude(), currentLocation.getLongitude()), radius);
 
@@ -190,11 +193,14 @@ public class SelectDifficultyActivity extends ActionBarActivity {
                                 String enemyDifficulty = (String) dataSnapshot.getValue();
 
                                 if (!userName.equals(key)&& enemyDifficulty.equals(difficulty)) {
+//                                    progress.dismiss();
                                     intent.putExtra("enemy", key);
                                     geoQuery.removeAllListeners();
                                     geoFire.removeLocation(userName);
                                     startActivity(intent);
-                                    finish();
+                                    if(locationListener != null) {
+                                        locationManager.removeUpdates(locationListener);
+                                    }
                                 }
                             }
 
