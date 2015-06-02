@@ -1,6 +1,8 @@
 package nl.han.s478026.bram.npuzzel;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Point;
@@ -17,6 +19,9 @@ import android.widget.GridView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
+import com.firebase.client.Firebase;
+import com.firebase.geofire.GeoFire;
+
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 
@@ -27,9 +32,16 @@ public class GameStartActivity extends ActionBarActivity {
     private static int ROWS = 1;
     private String difficulty;
     private String enemyUser;
+    public static final String MyPREFERENCES = "npuzzel_file";
+    public static final String USERNAME = "usernameKey";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        final GeoFire geoFire = new GeoFire(new Firebase("https://n-puzzle-bram-daniel.firebaseio.com/playersWaiting"));
+        SharedPreferences sharedpreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
+        geoFire.removeLocation(sharedpreferences.getString(USERNAME, null));
+
         setContentView(R.layout.activity_image_selection);
         Display display = getWindowManager().getDefaultDisplay();
         Point size = new Point();

@@ -190,9 +190,9 @@ public class SelectDifficultyActivity extends ActionBarActivity {
                                 String enemyDifficulty = (String) dataSnapshot.getValue();
                                 if (!userName.equals(key)&& enemyDifficulty.equals(difficulty)) {
                                     intent.putExtra("enemy", key);
-                                    startActivity(intent);
                                     geoQuery.removeAllListeners();
-                            geoFire.removeLocation(userName);
+                                    geoFire.removeLocation(userName);
+                                    startActivity(intent);
                                     finish();
                                 }
                             }
