@@ -8,11 +8,9 @@ import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.provider.Settings;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -20,11 +18,11 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
-import android.widget.TextView;
-import android.widget.Toast;
 
+import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
+import com.firebase.client.ValueEventListener;
 import com.firebase.geofire.GeoFire;
 import com.firebase.geofire.GeoLocation;
 import com.firebase.geofire.GeoQuery;
@@ -43,7 +41,6 @@ public class SelectDifficultyActivity extends ActionBarActivity {
 
     private static final int TIME_INTERVAL_FOR_LOCATION_UPDATE = 100;
     private double radius = 0.5;
-    private boolean searchingForOpponent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,9 +100,6 @@ public class SelectDifficultyActivity extends ActionBarActivity {
     }
 
     private void setLocation() {
-        Intent intent = getIntent();
-        final String userName = intent.getStringExtra("username");
-
         Criteria criteria = new Criteria();
         String locationProvider = locationManager.getBestProvider(criteria, true);
         Log.d("The best provider is ", "" + locationProvider);
@@ -169,30 +163,44 @@ public class SelectDifficultyActivity extends ActionBarActivity {
 
     private void handleStartGameButton(final String userName) {
         Button b = (Button) findViewById(R.id.buttonFindOpponent);
-        myFirebaseRef = new Firebase("https://n-puzzle-bram-daniel.firebaseio.com/");
+        final GeoFire geoFire = new GeoFire(new Firebase("https://n-puzzle-bram-daniel.firebaseio.com/playersWaiting"));
+        myFirebaseRef = geoFire.getFirebase();
 
         b.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View view) {
-                final GeoFire geoFire = new GeoFire(new Firebase("https://n-puzzle-bram-daniel.firebaseio.com/playersWaiting"));
                 geoFire.setLocation(userName, new GeoLocation(currentLocation.getLatitude(), currentLocation.getLongitude()));
-
                 final GeoQuery geoQuery = geoFire.queryAtLocation(new GeoLocation(currentLocation.getLatitude(), currentLocation.getLongitude()), radius);
+
+                RadioGroup radiogroup = (RadioGroup) findViewById(R.id.radioGroup);
+                RadioButton radioButton = (RadioButton) findViewById(radiogroup.getCheckedRadioButtonId());
+                final String difficulty = (String) radioButton.getTag();
+                final Intent intent = new Intent(SelectDifficultyActivity.this, GameStartActivity.class);
+                intent.putExtra("difficulty", difficulty);
+                myFirebaseRef.child(userName+"/difficulty").setValue(difficulty);
+
                 geoQuery.addGeoQueryEventListener(new GeoQueryEventListener() {
                     @Override
                     public void onKeyEntered(String key, GeoLocation location) {
+                        Firebase enemyRef = new Firebase("https://n-puzzle-bram-daniel.firebaseio.com/playersWaiting/"+key+"/difficulty");
                         if (!userName.equals(key)) {
-                            Intent intent = new Intent(SelectDifficultyActivity.this, GameStartActivity.class);
-                            RadioGroup radiogroup = (RadioGroup) findViewById(R.id.radioGroup);
-                            RadioButton radioButton = (RadioButton) findViewById(radiogroup.getCheckedRadioButtonId());
-                            final String difficulty = (String) radioButton.getTag();
+                            enemyRef.addValueEventListener(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                    Log.d("Difficulty is", "" + dataSnapshot.getValue());
+                                }
 
-                            intent.putExtra("difficulty", difficulty);
+                                @Override
+                                public void onCancelled(FirebaseError firebaseError) {
+
+                                }
+                            });
+
                             intent.putExtra("enemy", key);
                             startActivity(intent);
                             geoQuery.removeAllListeners();
-                            geoFire.removeLocation(userName);
+//                            geoFire.removeLocation(userName);
                             finish();
                         }
                     }
