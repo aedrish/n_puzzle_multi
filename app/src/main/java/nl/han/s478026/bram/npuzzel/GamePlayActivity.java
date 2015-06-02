@@ -76,7 +76,7 @@ public class GamePlayActivity extends ActionBarActivity {
     private String enemyUser;
     private Boolean enemyIsFinished = false;
     private Firebase isDone;
-    private String userName = sharedpreferences.getString(USERNAME, null);
+    private String userName;
     private int timeLeft;
 
     @Override
@@ -86,6 +86,7 @@ public class GamePlayActivity extends ActionBarActivity {
         Firebase.setAndroidContext(this);
         myFirebaseRef = new Firebase("https://n-puzzle-bram-daniel.firebaseio.com/");
         sharedpreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
+        userName = sharedpreferences.getString(USERNAME, null);
         setContentView(R.layout.activity_gameplay);
         Display display = getWindowManager().getDefaultDisplay();
         Point size = new Point();
@@ -435,6 +436,7 @@ public class GamePlayActivity extends ActionBarActivity {
     public int getNumberOfTiles(String difficulty) {
         switch(difficulty) {
             case "very easy":
+                minutes = 5;
                 return DIFFICULTY_VERY_EASY;
             case "easy":
                 minutes = 10;
