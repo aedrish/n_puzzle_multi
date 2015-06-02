@@ -182,27 +182,27 @@ public class SelectDifficultyActivity extends ActionBarActivity {
 
                 geoQuery.addGeoQueryEventListener(new GeoQueryEventListener() {
                     @Override
-                    public void onKeyEntered(String key, GeoLocation location) {
+                    public void onKeyEntered(final String key, GeoLocation location) {
                         Firebase enemyRef = new Firebase("https://n-puzzle-bram-daniel.firebaseio.com/playersWaiting/"+key+"/difficulty");
-                        if (!userName.equals(key)) {
-                            enemyRef.addValueEventListener(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(DataSnapshot dataSnapshot) {
-                                    Log.d("Difficulty is", "" + dataSnapshot.getValue());
-                                }
-
-                                @Override
-                                public void onCancelled(FirebaseError firebaseError) {
-
-                                }
-                            });
-
-                            intent.putExtra("enemy", key);
-                            startActivity(intent);
-                            geoQuery.removeAllListeners();
+                        enemyRef.addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                Log.d("Difficulty is", "" + dataSnapshot.getValue());
+                                String enemyDifficulty = dataSnapshot.getValue().toString();
+                                if (!userName.equals(key)&& enemyDifficulty.equals(difficulty)) {
+                                    intent.putExtra("enemy", key);
+                                    startActivity(intent);
+                                    geoQuery.removeAllListeners();
 //                            geoFire.removeLocation(userName);
-                            finish();
-                        }
+                                    finish();
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(FirebaseError firebaseError) {
+
+                            }
+                        });
                     }
 
                     @Override
