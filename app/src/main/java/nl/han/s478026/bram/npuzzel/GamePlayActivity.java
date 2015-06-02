@@ -56,6 +56,7 @@ public class GamePlayActivity extends ActionBarActivity {
     private SharedPreferences sharedpreferences;
     private Firebase myFirebaseRef;
 
+    private static int DIFFICULTY_VERY_EASY = 2;
     private static int DIFFICULTY_EASY = 3;
     private static int DIFFICULTY_MEDIUM = 4;
     private static int DIFFICULTY_HARD = 5;
@@ -69,6 +70,7 @@ public class GamePlayActivity extends ActionBarActivity {
     private ValueEventListener eventListener;
     private CountDownTimer countDown;
     private String enemyUser;
+    private Boolean enemyIsFinished;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -119,6 +121,7 @@ public class GamePlayActivity extends ActionBarActivity {
 
         ListView list = new ListView(this);
         final ArrayList<String> difficulty = new ArrayList<>();
+        difficulty.add("very easy");
         difficulty.add("easy");
         difficulty.add("medium");
         difficulty.add("hard");
@@ -138,19 +141,19 @@ public class GamePlayActivity extends ActionBarActivity {
         alertDialog.setCanceledOnTouchOutside(true);
     }
 
-    private Button addButton(final AlertDialog alertDialog, String bText, final int nTiles) {
-        Button b1 = new Button(this);
-        b1.setText(bText);
-        b1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                numberOfTiles = nTiles;
-                alertDialog.dismiss();
-                start();
-            }
-        });
-        return b1;
-    }
+//    private Button addButton(final AlertDialog alertDialog, String bText, final int nTiles) {
+//        Button b1 = new Button(this);
+//        b1.setText(bText);
+//        b1.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                numberOfTiles = nTiles;
+//                alertDialog.dismiss();
+//                start();
+//            }
+//        });
+//        return b1;
+//    }
 
 
     private void start() {
@@ -274,15 +277,43 @@ public class GamePlayActivity extends ActionBarActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 if(isPlaying) {
-                    boolean canBeSwitched = false;
                     Pair p = CheckSwitchPosition(position, numberOfTiles, croppedImagesInGame);
                     if ((boolean) p.first) {
                         if (changePositionImageAndUpdateLayout(layout, imageAdapter, position, (Integer) p.second, isPlaying)) {
                             isPlaying = false;
-                            Intent intent = new Intent(GamePlayActivity.this, YouWinActivity.class);
-                            intent.putExtra("resourceId", resourceId);
-                            intent.putExtra("usedSteps", usedSteps);
-                            startActivity(intent);
+//                            Intent intent = new Intent(GamePlayActivity.this, YouWinActivity.class);
+//                            intent.putExtra("resourceId", resourceId);
+//                            intent.putExtra("usedSteps", usedSteps);
+//                            startActivity(intent);
+                            Firebase isDone = myFirebaseRef.child("users/" + enemyUser + "/finished");
+                            isDone.setValue("true");
+
+                            Firebase enemyIsFinishedListener = myFirebaseRef.child("users/"+ enemyUser + "/finished");
+
+                            // Attach an listener to read the data at our posts reference
+                            eventListener = enemyIsFinishedListener.addValueEventListener(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot snapshot) {
+                                    if(snapshot.getValue() != null) {
+                                        Boolean isEnemyFinished = (Boolean) snapshot.getValue();
+                                        if(isEnemyFinished && !isPlaying) {
+                                            Toast.makeText(GamePlayActivity.this, "both stopped!", Toast.LENGTH_LONG).show();
+                                        } else if(isEnemyFinished) {
+                                            enemyIsFinished = true;
+                                        }
+                                    }
+                                }
+
+                                @Override
+                                public void onCancelled(FirebaseError firebaseError) {
+                                    System.out.println("The read failed: " + firebaseError.getMessage());
+                                }
+                            });
+
+                            if(!isPlaying && enemyIsFinished) {
+                                Toast.makeText(GamePlayActivity.this, "both stopped but you stopped last!", Toast.LENGTH_LONG).show();
+                            }
+
                         }
                     }
                 }
@@ -311,9 +342,9 @@ public class GamePlayActivity extends ActionBarActivity {
                 i++;
             }
         }
-        Pair test =  new Pair<>(canBeSwitched,pos2);
+        return new Pair<>(canBeSwitched,pos2);
 
-        return test;
+
     }
 
     private void createTiles(int numberOfTiles, Bitmap bitmap, int tileHeight, int tileWidth) {
@@ -385,6 +416,8 @@ public class GamePlayActivity extends ActionBarActivity {
         switch(difficulty) {
             case "easy":
                 return DIFFICULTY_EASY;
+            case "very easy":
+                return DIFFICULTY_VERY_EASY;
             case "medium":
                 return DIFFICULTY_MEDIUM;
             case "hard":
@@ -421,15 +454,16 @@ public class GamePlayActivity extends ActionBarActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-
         removeClickedFromFirebase();
     }
 
     private void removeClickedFromFirebase() {
-        Firebase enemy = myFirebaseRef.child("users/aedrish/clicked_tile");
+        Firebase enemy = myFirebaseRef.child("users/" + enemyUser + "/clicked_tile");
+        Firebase usedStepsInGame = myFirebaseRef.child("users/" + enemyUser + "/clicked_tile");
         if(eventListener != null) {
             enemy.removeEventListener(eventListener);
         }
         enemy.removeValue();
+        usedStepsInGame.removeValue();
     }
 }
