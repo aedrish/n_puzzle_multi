@@ -41,4 +41,5 @@
     <string name="no_location_available">No location available yet</string>
     <string name="searching_opponent">Searching opponent</string>
     <string name="locating_opponent">Please wait while an opponent is being located</string>
+    <string name="CountDownTimer">Game starts in</string>
 </resources>
