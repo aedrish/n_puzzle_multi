@@ -183,11 +183,12 @@ public class SelectDifficultyActivity extends ActionBarActivity {
                 geoQuery.addGeoQueryEventListener(new GeoQueryEventListener() {
                     @Override
                     public void onKeyEntered(final String key, GeoLocation location) {
-                        Firebase enemyRef = new Firebase("https://n-puzzle-bram-daniel.firebaseio.com/"+key+"/difficulty");
+                        Firebase enemyRef = new Firebase("https://n-puzzle-bram-daniel.firebaseio.com/users/"+key+"/difficulty");
                         enemyRef.addValueEventListener(new ValueEventListener() {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
                                 String enemyDifficulty = (String) dataSnapshot.getValue();
+
                                 if (!userName.equals(key)&& enemyDifficulty.equals(difficulty)) {
                                     intent.putExtra("enemy", key);
                                     geoQuery.removeAllListeners();
