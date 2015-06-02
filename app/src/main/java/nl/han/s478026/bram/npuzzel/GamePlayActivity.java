@@ -491,8 +491,10 @@ public class GamePlayActivity extends ActionBarActivity {
     }
 
     private void removeDataFromFirebase() {
-        Firebase enemy = myFirebaseRef.child("users/" + enemyUser + "/clicked_tile");
-        Firebase usedStepsInGame = myFirebaseRef.child("users/" + enemyUser + "/clicked_tile");
+        Firebase enemy = myFirebaseRef.child("users/" + userName + "/clicked_tile");
+        Firebase usedStepsInGame = myFirebaseRef.child("users/" + userName + "/usedSteps");
+        Firebase difficulty = myFirebaseRef.child("users/" + userName + "/difficulty");
+        difficulty.removeValue();
         if(eventListener != null) {
             enemy.removeEventListener(eventListener);
         }
