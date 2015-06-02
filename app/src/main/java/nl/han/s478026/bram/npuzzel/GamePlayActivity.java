@@ -71,6 +71,7 @@ public class GamePlayActivity extends ActionBarActivity {
     private CountDownTimer countDown;
     private String enemyUser;
     private Boolean enemyIsFinished = false;
+    private Firebase isDone;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -285,7 +286,7 @@ public class GamePlayActivity extends ActionBarActivity {
 //                            intent.putExtra("resourceId", resourceId);
 //                            intent.putExtra("usedSteps", usedSteps);
 //                            startActivity(intent);
-                            final Firebase isDone = myFirebaseRef.child("users/" + sharedpreferences.getString(USERNAME,null) + "/finished");
+                            isDone = myFirebaseRef.child("users/" + sharedpreferences.getString(USERNAME,null) + "/finished");
                             isDone.setValue("true");
 
                             Firebase enemyIsFinishedListener = myFirebaseRef.child("users/"+ enemyUser + "/finished");
@@ -296,11 +297,9 @@ public class GamePlayActivity extends ActionBarActivity {
                                 public void onDataChange(DataSnapshot snapshot) {
                                     if(snapshot.getValue() != null) {
                                         String isEnemyFinished = (String) snapshot.getValue();
-                                        if(isEnemyFinished == "true" && !isPlaying) {
+                                        if(!isPlaying && isEnemyFinished == "true") {
                                             Toast.makeText(GamePlayActivity.this, "both stopped!", Toast.LENGTH_LONG).show();
-                                            isDone.removeEventListener(eventListenerWin);
                                         } else if(isEnemyFinished == "true") {
-                                            isDone.removeEventListener(eventListenerWin);
                                             enemyIsFinished = true;
                                         }
                                     }
@@ -464,6 +463,9 @@ public class GamePlayActivity extends ActionBarActivity {
         Firebase usedStepsInGame = myFirebaseRef.child("users/" + enemyUser + "/clicked_tile");
         if(eventListener != null) {
             enemy.removeEventListener(eventListener);
+        }
+        if(eventListenerWin != null) {
+            isDone.removeEventListener(eventListenerWin);
         }
         enemy.removeValue();
         usedStepsInGame.removeValue();
