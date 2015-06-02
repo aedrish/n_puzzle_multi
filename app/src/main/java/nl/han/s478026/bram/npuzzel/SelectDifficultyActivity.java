@@ -164,7 +164,7 @@ public class SelectDifficultyActivity extends ActionBarActivity {
     private void handleStartGameButton(final String userName) {
         Button b = (Button) findViewById(R.id.buttonFindOpponent);
         final GeoFire geoFire = new GeoFire(new Firebase("https://n-puzzle-bram-daniel.firebaseio.com/playersWaiting"));
-        myFirebaseRef = geoFire.getFirebase();
+        myFirebaseRef = new Firebase("https://n-puzzle-bram-daniel.firebaseio.com/users");
 
         b.setOnClickListener(new View.OnClickListener() {
 
@@ -183,7 +183,7 @@ public class SelectDifficultyActivity extends ActionBarActivity {
                 geoQuery.addGeoQueryEventListener(new GeoQueryEventListener() {
                     @Override
                     public void onKeyEntered(final String key, GeoLocation location) {
-                        Firebase enemyRef = new Firebase("https://n-puzzle-bram-daniel.firebaseio.com/playersWaiting/"+key+"/difficulty");
+                        Firebase enemyRef = new Firebase("https://n-puzzle-bram-daniel.firebaseio.com/"+key+"/difficulty");
                         enemyRef.addValueEventListener(new ValueEventListener() {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
