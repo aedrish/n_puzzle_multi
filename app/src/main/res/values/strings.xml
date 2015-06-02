@@ -39,4 +39,5 @@
     <string name="location_settings">Go to location settings</string>
     <string name="wait_for_location">Your location is not yet available. Please wait a moment until your location has been found</string>
     <string name="no_location_available">No location available yet</string>
+    <string name="CountDownTimer">Game starts in</string>
 </resources>

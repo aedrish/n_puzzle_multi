@@ -8,17 +8,16 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Point;
 import android.os.CountDownTimer;
-import android.support.v4.widget.ListViewAutoScrollHelper;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Pair;
 import android.view.Display;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -52,42 +51,48 @@ public class GamePlayActivity extends ActionBarActivity {
 
     private static final int SCOREPERSEC = 10;
     private static final int SCORECOSTPERMOVE = 10;
-
-    public static final String MyPREFERENCES = "npuzzel_file";
-    public static final String USERNAME = "usernameKey";
     private static final int PLAYTIME = 60*1000;
-    private int minutes;
-    private SharedPreferences sharedpreferences;
-    private Firebase myFirebaseRef;
+    private static final String MyPREFERENCES = "npuzzel_file";
+    private static final String USERNAME = "usernameKey";
+    private static final int DIFFICULTY_VERY_EASY = 2;
+    private static final int DIFFICULTY_EASY = 3;
+    private static final int DIFFICULTY_MEDIUM = 4;
+    private static final int DIFFICULTY_HARD = 5;
 
-    private static int DIFFICULTY_VERY_EASY = 2;
-    private static int DIFFICULTY_EASY = 3;
-    private static int DIFFICULTY_MEDIUM = 4;
-    private static int DIFFICULTY_HARD = 5;
-    private int usedSteps = 0;
-    private boolean isPlaying = false;
+    private int timeLeft;
+    private int minutes;
     private int numberOfTiles = 0;
+    private int usedSteps = 0;
     private int width;
     private int height;
     private int resourceId;
+
+    private SharedPreferences sharedpreferences;
+    private Firebase myFirebaseRef;
+    private Firebase isDone;
+
+    private boolean isPlaying = false;
+
+    private String enemyUser;
+    private String userName;
+
     private GridView layout, layout2;
     private ValueEventListener eventListener, eventListenerWin;
     private CountDownTimer countDown;
-    private String enemyUser;
     private Boolean enemyIsFinished = false;
-    private Firebase isDone;
-    private String userName;
-    private int timeLeft;
+
+    private AlertDialog CountDownTimerAlertDialog;
+    private TextView countDownTimerTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_gameplay);
 
         Firebase.setAndroidContext(this);
         myFirebaseRef = new Firebase("https://n-puzzle-bram-daniel.firebaseio.com/");
         sharedpreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
         userName = sharedpreferences.getString(USERNAME, null);
-        setContentView(R.layout.activity_gameplay);
         Display display = getWindowManager().getDefaultDisplay();
         Point size = new Point();
 
@@ -149,26 +154,11 @@ public class GamePlayActivity extends ActionBarActivity {
         alertDialog.setCanceledOnTouchOutside(true);
     }
 
-//    private Button addButton(final AlertDialog alertDialog, String bText, final int nTiles) {
-//        Button b1 = new Button(this);
-//        b1.setText(bText);
-//        b1.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                numberOfTiles = nTiles;
-//                alertDialog.dismiss();
-//                start();
-//            }
-//        });
-//        return b1;
-//    }
-
-
     private void start() {
         if(countDown != null) {
             countDown.cancel();
         }
-        removeClickedFromFirebase();
+        removeDataFromFirebase();
 
         layout = (GridView)findViewById(R.id.player);
         layout.setNumColumns(numberOfTiles);
@@ -213,9 +203,10 @@ public class GamePlayActivity extends ActionBarActivity {
 
 
         setEnemy();
-        CountDownTimer c = new CountDownTimer(3000, 1000) {
+        CountDownTimer c = new CountDownTimer(4000, 1000) {
             public void onTick(long millisUntilFinished) {
-                Toast.makeText(GamePlayActivity.this, "Start in: " + millisUntilFinished / 1000, Toast.LENGTH_SHORT).show();
+//                Toast.makeText(GamePlayActivity.this, "Start in: " + millisUntilFinished / 1000, Toast.LENGTH_SHORT).show();
+                StartCountdownTimer("" + ( millisUntilFinished / 1000));
             }
 
             @Override
@@ -224,13 +215,33 @@ public class GamePlayActivity extends ActionBarActivity {
                 layout.setAdapter(imageAdapter);
                 isPlaying = true;
                 countDown.start();
-                Toast.makeText(GamePlayActivity.this, "GO!", Toast.LENGTH_SHORT).show();
+                CountDownTimerAlertDialog.dismiss();
 
             }
         };
 
         c.start();
         setItemClickListenerOnGridView(numberOfTiles, layout, imageAdapter, resourceId);
+    }
+
+    private void StartCountdownTimer(String time) {
+        if(countDownTimerTextView == null) {
+            countDownTimerTextView = new TextView(this);
+            countDownTimerTextView.setGravity(Gravity.CENTER);
+            countDownTimerTextView.setTextSize(25);
+        }
+        countDownTimerTextView.setText(time);
+        if(CountDownTimerAlertDialog != null) {
+            CountDownTimerAlertDialog.setView(countDownTimerTextView);
+        } else {
+            CountDownTimerAlertDialog = new AlertDialog.Builder(this).create();
+            CountDownTimerAlertDialog.setTitle(R.string.CountDownTimer);
+            CountDownTimerAlertDialog.setView(countDownTimerTextView);
+
+            CountDownTimerAlertDialog.setCanceledOnTouchOutside(false);
+            CountDownTimerAlertDialog.show();
+        }
+
     }
 
     private String ConvertSecondToHHMMString(int secondtTime)
@@ -336,10 +347,6 @@ public class GamePlayActivity extends ActionBarActivity {
 
     private int calculateScore() {
         return (timeLeft * SCOREPERSEC) - usedSteps * SCORECOSTPERMOVE;
-    }
-
-    public void playersBothStopped() {
-        
     }
 
     private Pair CheckSwitchPosition(int position, int numberOfTiles, ArrayList<CroppedImage> list) {
@@ -480,10 +487,10 @@ public class GamePlayActivity extends ActionBarActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        removeClickedFromFirebase();
+        removeDataFromFirebase();
     }
 
-    private void removeClickedFromFirebase() {
+    private void removeDataFromFirebase() {
         Firebase enemy = myFirebaseRef.child("users/" + enemyUser + "/clicked_tile");
         Firebase usedStepsInGame = myFirebaseRef.child("users/" + enemyUser + "/clicked_tile");
         if(eventListener != null) {
