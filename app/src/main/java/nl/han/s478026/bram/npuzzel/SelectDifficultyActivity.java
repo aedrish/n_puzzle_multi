@@ -1,21 +1,17 @@
 package nl.han.s478026.bram.npuzzel;
 
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.location.Criteria;
+import android.content.SharedPreferences;
 import android.location.Location;
-import android.location.LocationListener;
 import android.location.LocationManager;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
@@ -28,35 +24,31 @@ import com.firebase.geofire.GeoLocation;
 import com.firebase.geofire.GeoQuery;
 import com.firebase.geofire.GeoQueryEventListener;
 
-import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
 
 
-public class SelectDifficultyActivity extends ActionBarActivity {
+public class SelectDifficultyActivity extends ActionBarActivity implements Observer {
     private Firebase myFirebaseRef;
 
-    private LocationManager locationManager;
-    private LocationListener locationListener;
+    private LocationUpdater locationUpdater = null;
     private Location currentLocation = null;
-    private ProgressDialog progress;
 
-    private static final int TIME_INTERVAL_FOR_LOCATION_UPDATE = 100;
+    private static final String MyPREFERENCES = "npuzzel_file";
+    private static final String USERNAME = "usernameKey";
+
     private double radius = 0.5;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_select_difficulty);
-        locationManager  = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
     }
 
-
-
     @Override
-    protected void onDestroy(){
+    protected void onDestroy() {
         super.onDestroy();
-        if(locationListener != null) {
-            locationManager.removeUpdates(locationListener);
-        }
+        resetLocation();
     }
 
     @Override
@@ -88,79 +80,14 @@ public class SelectDifficultyActivity extends ActionBarActivity {
     }
 
     private void setRemoteLocation() {
-        Intent intent = getIntent();
-        final String userName = intent.getStringExtra("username");
-        if(!checkIfAnyLocationProviderIsActive()) {
-            showNoActiveProviderDialog();
-        }else{
-            setLocation();
-            handleStartGameButton(userName);
-        }
-    }
+        SharedPreferences sharedpreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
+        final String userName = sharedpreferences.getString(USERNAME, null);
 
-    private void setLocation() {
-        Criteria criteria = new Criteria();
-        String locationProvider = locationManager.getBestProvider(criteria, true);
-        Log.d("The best provider is ", "" + locationProvider);
+        LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+        locationUpdater = new LocationUpdater(locationManager, this);
+        locationUpdater.addObserver(this);
 
-        locationListener = new LocationListener() {
-            public void onLocationChanged(Location location) {
-                if (currentLocation == null) {
-                    progress.dismiss();
-                }
-                currentLocation = location;
-                    Log.d("Dismissing progress", " now");
-
-            }
-
-            public void onStatusChanged(String provider, int status, Bundle extras) {
-            }
-
-            public void onProviderEnabled(String provider) {
-            }
-
-            public void onProviderDisabled(String provider) {
-            }
-        };
-
-        locationManager.requestLocationUpdates(locationProvider, TIME_INTERVAL_FOR_LOCATION_UPDATE, 0, locationListener);
-        createWaitingDialog(getString(R.string.no_location_available), getString(R.string.wait_for_location));
-    }
-
-    private void createWaitingDialog(String title, String message) {
-        progress = new ProgressDialog(this);
-        progress.setTitle(title);
-        progress.setMessage(message);
-        progress.show();
-    }
-
-    private void showNoActiveProviderDialog() {
-        final AlertDialog alertDialog = new AlertDialog.Builder(this).create();
-        alertDialog.setTitle("No Location Providers Active");
-        alertDialog.setMessage(getString(R.string.no_active_location_providers));
-        LinearLayout dv = new LinearLayout(this);
-        dv.setOrientation(LinearLayout.VERTICAL);
-
-        Button b1 = addDialogButton(alertDialog, getString(R.string.location_settings));
-        dv.addView(b1);
-
-        alertDialog.setView(dv);
-        alertDialog.show();
-        alertDialog.setCanceledOnTouchOutside(true);
-    }
-
-    private Button addDialogButton(final AlertDialog alertDialog, String text){
-        Button b1 = new Button(this);
-        b1.setText(text);
-        b1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                alertDialog.dismiss();
-                startActivityForResult(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS), 0);
-            }
-        });
-
-        return b1;
+        handleStartGameButton(userName);
     }
 
     private void handleStartGameButton(final String userName) {
@@ -172,41 +99,38 @@ public class SelectDifficultyActivity extends ActionBarActivity {
 
             @Override
             public void onClick(View view) {
-                createWaitingDialog(getString(R.string.searching_opponent), getString(R.string.locating_opponent));
+                final WaitingDialog waitingDialog = new WaitingDialog(SelectDifficultyActivity.this, getString(R.string.searching_opponent), getString(R.string.locating_opponent));
+
                 geoFire.setLocation(userName, new GeoLocation(currentLocation.getLatitude(), currentLocation.getLongitude()));
                 final GeoQuery geoQuery = geoFire.queryAtLocation(new GeoLocation(currentLocation.getLatitude(), currentLocation.getLongitude()), radius);
 
-                RadioGroup radiogroup = (RadioGroup) findViewById(R.id.radioGroup);
-                RadioButton radioButton = (RadioButton) findViewById(radiogroup.getCheckedRadioButtonId());
-                final String difficulty = (String) radioButton.getTag();
+                final String difficulty = getDifficulty();
                 final Intent intent = new Intent(SelectDifficultyActivity.this, GameStartActivity.class);
                 intent.putExtra("difficulty", difficulty);
-                myFirebaseRef.child(userName+"/difficulty").setValue(difficulty);
+
+                myFirebaseRef.child(userName + "/difficulty").setValue(difficulty);
 
                 geoQuery.addGeoQueryEventListener(new GeoQueryEventListener() {
                     @Override
                     public void onKeyEntered(final String key, GeoLocation location) {
-                        Firebase enemyRef = new Firebase("https://n-puzzle-bram-daniel.firebaseio.com/users/"+key+"/difficulty");
+                        Firebase enemyRef = new Firebase("https://n-puzzle-bram-daniel.firebaseio.com/users/" + key + "/difficulty");
                         enemyRef.addValueEventListener(new ValueEventListener() {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
                                 String enemyDifficulty = (String) dataSnapshot.getValue();
 
-                                if (!userName.equals(key)&& enemyDifficulty.equals(difficulty)) {
-//                                    progress.dismiss();
+                                if (!userName.equals(key) && enemyDifficulty.equals(difficulty)) {
+                                    waitingDialog.dismiss();
                                     intent.putExtra("enemy", key);
                                     geoQuery.removeAllListeners();
                                     geoFire.removeLocation(userName);
                                     startActivity(intent);
-                                    if(locationListener != null) {
-                                        locationManager.removeUpdates(locationListener);
-                                    }
+                                    resetLocation();
                                 }
                             }
 
                             @Override
                             public void onCancelled(FirebaseError firebaseError) {
-
                             }
                         });
                     }
@@ -231,14 +155,25 @@ public class SelectDifficultyActivity extends ActionBarActivity {
         });
     }
 
-    private boolean checkIfAnyLocationProviderIsActive(){
-        List<String> providers = locationManager.getProviders(true);
-        Log.d("Listing providers", providers + "");
+    private String getDifficulty() {
+        RadioGroup radiogroup = (RadioGroup) findViewById(R.id.radioGroup);
+        RadioButton radioButton = (RadioButton) findViewById(radiogroup.getCheckedRadioButtonId());
+        return (String) radioButton.getTag();
+    }
 
-        if (providers.size() == 1){
-            return false;
-        }else{
-            return true;
+    private void resetLocation() {
+        locationUpdater.deleteObservers();
+        locationUpdater = null;
+    }
+
+    @Override
+    public void update(Observable observable, Object o) {
+        if (o instanceof Location) {
+            currentLocation = (Location) o;
+        } else if (o instanceof String) {
+            if (o.toString().equals("no_location_provider")) {
+                startActivityForResult(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS), 0);
+            }
         }
     }
 }

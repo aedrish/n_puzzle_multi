@@ -16,8 +16,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
 
 import com.firebase.client.Firebase;
 import com.firebase.geofire.GeoFire;
@@ -86,6 +84,7 @@ public class GameStartActivity extends ActionBarActivity {
                 intent.putExtra("difficulty", difficulty);
                 intent.putExtra("enemy", enemyUser);
                 startActivity(intent);
+                finish();
             }
         });
     }

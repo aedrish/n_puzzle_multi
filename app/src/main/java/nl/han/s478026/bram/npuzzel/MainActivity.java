@@ -39,8 +39,6 @@ public class MainActivity extends ActionBarActivity {
         if (sharedpreferences.contains(USERNAME))
         {
             Intent intent = new Intent(MainActivity.this, SelectDifficultyActivity.class);
-
-            intent.putExtra("username",  sharedpreferences.getString(USERNAME,null));
             startActivity(intent);
             finish();
         } else {
