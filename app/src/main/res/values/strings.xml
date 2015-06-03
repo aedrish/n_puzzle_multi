@@ -42,4 +42,7 @@
     <string name="searching_opponent">Searching opponent</string>
     <string name="locating_opponent">Please wait while an opponent is being located</string>
     <string name="CountDownTimer">Game starts in</string>
+    <string name="input_radius_for_opponent">Please input the radius in which you want to seek an opponent</string>
+    <string name="standard_radius">500</string>
+    <string name="meters">meters</string>
 </resources>

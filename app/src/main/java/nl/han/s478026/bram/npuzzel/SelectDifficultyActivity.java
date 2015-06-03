@@ -8,12 +8,15 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.TextView;
 
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
@@ -102,7 +105,7 @@ public class SelectDifficultyActivity extends ActionBarActivity implements Obser
                 final WaitingDialog waitingDialog = new WaitingDialog(SelectDifficultyActivity.this, getString(R.string.searching_opponent), getString(R.string.locating_opponent));
 
                 geoFire.setLocation(userName, new GeoLocation(currentLocation.getLatitude(), currentLocation.getLongitude()));
-                final GeoQuery geoQuery = geoFire.queryAtLocation(new GeoLocation(currentLocation.getLatitude(), currentLocation.getLongitude()), radius);
+                final GeoQuery geoQuery = geoFire.queryAtLocation(new GeoLocation(currentLocation.getLatitude(), currentLocation.getLongitude()), getRadius());
 
                 final String difficulty = getDifficulty();
                 final Intent intent = new Intent(SelectDifficultyActivity.this, GameStartActivity.class);
@@ -153,6 +156,13 @@ public class SelectDifficultyActivity extends ActionBarActivity implements Obser
                 });
             }
         });
+    }
+
+    private double getRadius() {
+        EditText radiusText = (EditText) findViewById(R.id.radius);
+        return (Double.parseDouble(radiusText.getText().toString())/1000);
+        //Source
+        //http://stackoverflow.com/questions/10436776/how-to-get-a-numerical-value-from-an-android-edittext
     }
 
     private String getDifficulty() {
