@@ -34,6 +34,11 @@
 
     <string name="find_opponent">Find opponent</string>
     <string name="opponent_still_playing">Please wait until your opponent is done</string>
+    <string name="you_won">You won this match</string>
+    <string name="you_lost">You lost this match</string>
+    <string name="your_points">Your points:</string>
+    <string name="enemy_points">Your opponent points:</string>
+
     <string name="title_activity_select_difficulty">SelectDifficultyActivity</string>
     <string name="no_active_location_providers">You have no location providers active, please turn on GPS or Network-based location detection</string>
     <string name="location_settings">Go to location settings</string>

@@ -5,8 +5,12 @@ import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.animation.AlphaAnimation;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import static nl.han.s478026.bram.npuzzel.R.string.enemy_points;
+import static nl.han.s478026.bram.npuzzel.R.string.your_points;
 
 
 /**
@@ -21,15 +25,37 @@ public class YouWinActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_you_win);
 
+        TextView yourScoreTextView = (TextView) findViewById(R.id.your_score);
+        TextView enemyScoreTextView = (TextView) findViewById(R.id.enemy_score);
+
+
         Intent intent = getIntent();
         int resourceId = intent.getIntExtra("resourceId", 0);
-        int usedSteps = intent.getIntExtra("usedSteps", 0);
+        int yourScore = intent.getIntExtra("yourScore", 0);
+        int enemyScore = (int) intent.getLongExtra("enemyScore", 0);
 
+        yourScoreTextView.setText(getResources().getText(your_points) + "" +  yourScore);
+        enemyScoreTextView.setText(getResources().getText(enemy_points) + "" +  enemyScore);
         ImageView iv = (ImageView) findViewById(R.id.imageViewResult);
-        TextView tv = (TextView) findViewById(R.id.numberOfClicksUsed);
+
+        TextView tvwl = (TextView) findViewById(R.id.win_lose_text);
+        setWinLoseText(yourScore, enemyScore, tvwl);
         iv.setImageResource(resourceId);
-        tv.setText("U had " + usedSteps + " stappen nodig!");
+        AlphaAnimation animation1 = new AlphaAnimation(0.f, 1.0f);
+        animation1.setDuration(5000);
+        animation1.setStartOffset(0);
+        animation1.setFillAfter(true);
+        iv.startAnimation(animation1);
+
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    }
+
+    private void setWinLoseText(int yourScore, int enemyScore, TextView tvwl) {
+        if(yourScore > enemyScore) {
+            tvwl.setText(R.string.you_won);
+        } else {
+            tvwl.setText(R.string.you_lost);
+        }
     }
 
 

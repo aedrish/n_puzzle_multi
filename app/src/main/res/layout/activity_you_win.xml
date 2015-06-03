@@ -19,8 +19,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="@string/opponent_still_playing"
-        android:id="@+id/please_wait_for_opponent"
+        android:text="win_lose_text"
+        android:id="@+id/win_lose_text"
         android:layout_centerHorizontal="true"
         android:layout_below="@id/textView"/>
 
@@ -32,16 +32,27 @@
         android:layout_alignParentRight="true"
         android:id="@+id/imageViewResult"
         android:layout_centerHorizontal="true"
-        android:layout_above="@+id/numberOfClicksUsed"
-        android:layout_below="@+id/please_wait_for_opponent" />
+        android:layout_below="@+id/win_lose_text"
+        android:layout_above="@+id/enemy_score" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Large Text"
-        android:id="@+id/numberOfClicksUsed"
+        android:text="Enemy score"
+        android:id="@+id/enemy_score"
         android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Your score"
+        android:id="@+id/your_score"
+        android:layout_above="@+id/enemy_score"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
 
 </RelativeLayout>

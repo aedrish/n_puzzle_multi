@@ -66,10 +66,10 @@ public class GamePlayActivity extends ActionBarActivity {
     private int width;
     private int height;
     private int resourceId;
+    private int score;
 
     private SharedPreferences sharedpreferences;
-    private Firebase myFirebaseRef;
-    private Firebase isDone;
+    private Firebase myFirebaseRef, isDone, enemyScore;
 
     private boolean isPlaying = false;
 
@@ -77,7 +77,7 @@ public class GamePlayActivity extends ActionBarActivity {
     private String userName;
 
     private GridView layout, layout2;
-    private ValueEventListener eventListener, eventListenerWin;
+    private ValueEventListener eventListener, eventListenerWin, enemyEventListener;
     private CountDownTimer countDown;
     private Boolean enemyIsFinished = false;
 
@@ -301,15 +301,11 @@ public class GamePlayActivity extends ActionBarActivity {
                     if ((boolean) p.first) {
                         if (changePositionImageAndUpdateLayout(layout, imageAdapter, position, (Integer) p.second, isPlaying)) {
                             isPlaying = false;
-//                            Intent intent = new Intent(GamePlayActivity.this, YouWinActivity.class);
-//                            intent.putExtra("resourceId", resourceId);
-//                            intent.putExtra("usedSteps", usedSteps);
-//                            startActivity(intent);
                             isDone = myFirebaseRef.child("users/" + userName + "/finished");
-                            isDone.setValue("true");
+                            isDone.setValue(true);
 
                             Firebase setPlayerScore = myFirebaseRef.child("users/" + userName + "/score");
-                            int score = calculateScore();
+                            score = calculateScore();
                             setPlayerScore.setValue(score);
 
                             Firebase enemyIsFinishedListener = myFirebaseRef.child("users/"+ enemyUser + "/finished");
@@ -319,10 +315,11 @@ public class GamePlayActivity extends ActionBarActivity {
                                 @Override
                                 public void onDataChange(DataSnapshot snapshot) {
                                     if(snapshot.getValue() != null) {
-                                        String isEnemyFinished = (String) snapshot.getValue();
-                                        if(!isPlaying && isEnemyFinished == "true") {
+                                        Boolean isEnemyFinished = (Boolean) snapshot.getValue();
+                                        if(!isPlaying && isEnemyFinished) {
                                             Toast.makeText(GamePlayActivity.this, "both stopped!", Toast.LENGTH_LONG).show();
-                                        } else if(isEnemyFinished == "true") {
+                                            GoToWinScreen();
+                                        } else if(isEnemyFinished) {
                                             enemyIsFinished = true;
                                         }
                                     }
@@ -337,6 +334,7 @@ public class GamePlayActivity extends ActionBarActivity {
                             if(!isPlaying && enemyIsFinished) {
                                 Toast.makeText(GamePlayActivity.this, "both stopped but you stopped last!", Toast.LENGTH_LONG).show();
                                 isDone.removeEventListener(eventListenerWin);
+                                GoToWinScreen();
                             }
                         }
                     }
@@ -345,6 +343,30 @@ public class GamePlayActivity extends ActionBarActivity {
     });
     }
 
+    private void GoToWinScreen() {
+        enemyScore = myFirebaseRef.child("users/" + enemyUser + "/score");
+        enemyEventListener = enemyScore.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if((long) dataSnapshot.getValue() > 0) {
+                    final Intent intent = new Intent(GamePlayActivity.this, YouWinActivity.class);
+                    intent.putExtra("yourScore", score);
+                    intent.putExtra("enemyUser", enemyUser);
+                    intent.putExtra("resourceId", resourceId);
+                    intent.putExtra("enemyScore", (long) dataSnapshot.getValue());
+                    startActivity(intent);
+                    finish();
+                } else {
+                    Toast.makeText(GamePlayActivity.this, "No acces to database", Toast.LENGTH_LONG).show();
+                }
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+
+            }
+        });
+    }
     private int calculateScore() {
         return (timeLeft * SCOREPERSEC) - usedSteps * SCORECOSTPERMOVE;
     }
@@ -492,6 +514,7 @@ public class GamePlayActivity extends ActionBarActivity {
 
     private void removeDataFromFirebase() {
         Firebase enemy = myFirebaseRef.child("users/" + userName + "/clicked_tile");
+        Firebase finished = myFirebaseRef.child("users/" + userName + "/finished");
         Firebase usedStepsInGame = myFirebaseRef.child("users/" + userName + "/usedSteps");
         Firebase difficulty = myFirebaseRef.child("users/" + userName + "/difficulty");
         difficulty.removeValue();
@@ -501,7 +524,11 @@ public class GamePlayActivity extends ActionBarActivity {
         if(eventListenerWin != null) {
             isDone.removeEventListener(eventListenerWin);
         }
+        if(enemyEventListener != null) {
+            enemyScore.removeEventListener(enemyEventListener);
+        }
         enemy.removeValue();
+        finished.removeValue();
         usedStepsInGame.removeValue();
     }
 }
