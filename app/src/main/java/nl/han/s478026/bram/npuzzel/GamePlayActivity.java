@@ -306,7 +306,7 @@ public class GamePlayActivity extends ActionBarActivity {
                             setPlayerScore.setValue(score);
 
                             // Attach an listener to read the data at our posts reference
-                            enemyIsFinishedListener.addListenerForSingleValueEvent(new ValueEventListener() {
+                            enemyIsFinishedListener.addValueEventListener(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(DataSnapshot snapshot) {
                                     if (snapshot.getValue() != null) {

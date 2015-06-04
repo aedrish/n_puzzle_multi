@@ -38,7 +38,7 @@ public class GameStartActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         final GeoFire geoFire = new GeoFire(new Firebase("https://n-puzzle-bram-daniel.firebaseio.com/playersWaiting"));
         SharedPreferences sharedpreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
-        geoFire.removeLocation(sharedpreferences.getString(USERNAME, null));
+//        geoFire.removeLocation(sharedpreferences.getString(USERNAME, null));
 
         setContentView(R.layout.activity_image_selection);
         Display display = getWindowManager().getDefaultDisplay();

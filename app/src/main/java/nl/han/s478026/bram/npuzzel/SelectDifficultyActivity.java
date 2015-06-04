@@ -1,8 +1,5 @@
 package nl.han.s478026.bram.npuzzel;
 
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -14,13 +11,12 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
@@ -31,6 +27,9 @@ import com.firebase.geofire.GeoLocation;
 import com.firebase.geofire.GeoQuery;
 import com.firebase.geofire.GeoQueryEventListener;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -52,35 +51,39 @@ public class SelectDifficultyActivity extends ActionBarActivity implements Obser
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_select_difficulty);
-        
-        fillHistoryList();
-        FragmentManager fragmentManager = getFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
-        HistoryFragment fragment = new HistoryFragment();
-        fragmentTransaction.add(R.id.fragment_container, fragment);
-        fragmentTransaction.commit();
+        fillHistoryList();
+//        FragmentManager fragmentManager = getFragmentManager();
+//        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+//        HistoryFragment fragment = new HistoryFragment();
+//        fragmentTransaction.add(R.id.fragment_container, fragment);
+//        fragmentTransaction.commit();
     }
 
     private void fillHistoryList() {
         SharedPreferences sharedpreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
         userName = sharedpreferences.getString(USERNAME, null);
+
         final ListView historyList = (ListView) findViewById(R.id.history_list);
+        final ArrayList<String> nameList = new ArrayList<>();
 
         Firebase ref = new Firebase("https://n-puzzle-bram-daniel.firebaseio.com/"+userName+"/history");
         // Attach an listener to read the data at our posts reference
-        ref.addValueEventListener(new ValueEventListener() {
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
-                TextView view = new TextView(SelectDifficultyActivity.this);
-                view.setText(snapshot.getKey());
-                historyList.addView(view);
+                Log.d("checking firebase", "key"+snapshot.hasChildren());
+                historyList.setAdapter(new ArrayAdapter<>(SelectDifficultyActivity.this, android.R.layout.simple_list_item_1, nameList));
             }
+
             @Override
             public void onCancelled(FirebaseError firebaseError) {
                 System.out.println("The read failed: " + firebaseError.getMessage());
             }
         });
+
+
 
         radiogroup = (RadioGroup) findViewById(R.id.radioGroup);
         for (Difficulty item: Difficulty.values()) {
@@ -160,7 +163,7 @@ public class SelectDifficultyActivity extends ActionBarActivity implements Obser
                     public void onKeyEntered(final String key, GeoLocation location) {
                         if (!userName.equals(key)) {
                             Firebase enemyRef = new Firebase("https://n-puzzle-bram-daniel.firebaseio.com/users/" + key + "/difficulty");
-                            enemyRef.addValueEventListener(new ValueEventListener() {
+                            enemyRef.addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(DataSnapshot dataSnapshot) {
                                     String enemyDifficulty = (String) dataSnapshot.getValue();
