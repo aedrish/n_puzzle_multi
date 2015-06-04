@@ -129,7 +129,7 @@ public class SelectDifficultyActivity extends ActionBarActivity implements Obser
                     public void onKeyEntered(final String key, GeoLocation location) {
                         if (!userName.equals(key)) {
                             Firebase enemyRef = new Firebase("https://n-puzzle-bram-daniel.firebaseio.com/users/" + key + "/difficulty");
-                            enemyRef.addValueEventListener(new ValueEventListener() {
+                            enemyRef.addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(DataSnapshot dataSnapshot) {
                                     String enemyDifficulty = (String) dataSnapshot.getValue();
@@ -139,7 +139,7 @@ public class SelectDifficultyActivity extends ActionBarActivity implements Obser
                                         geoQuery.removeAllListeners();
                                         geoFire.removeLocation(userName);
                                         startActivity(intent);
-                                        resetLocation();
+//                                        resetLocation();
                                     }
                                 }
 
