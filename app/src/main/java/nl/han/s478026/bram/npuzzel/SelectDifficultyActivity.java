@@ -1,5 +1,7 @@
 package nl.han.s478026.bram.npuzzel;
 
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -14,6 +16,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -41,11 +44,41 @@ public class SelectDifficultyActivity extends ActionBarActivity implements Obser
     private static final String USERNAME = "usernameKey";
 
     private double radius = 0.5;
+    private String userName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_select_difficulty);
+
+        fillHistoryList();
+        FragmentManager fragmentManager = getFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+        HistoryFragment fragment = new HistoryFragment();
+        fragmentTransaction.add(R.id.fragment_container, fragment);
+        fragmentTransaction.commit();
+    }
+
+    private void fillHistoryList() {
+        SharedPreferences sharedpreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
+        userName = sharedpreferences.getString(USERNAME, null);
+        final ListView historyList = (ListView) findViewById(R.id.history_list);
+
+        Firebase ref = new Firebase("https://n-puzzle-bram-daniel.firebaseio.com/"+userName+"/history");
+        // Attach an listener to read the data at our posts reference
+        ref.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                TextView view = new TextView(SelectDifficultyActivity.this);
+                view.setText(snapshot.getKey());
+                historyList.addView(view);
+            }
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+                System.out.println("The read failed: " + firebaseError.getMessage());
+            }
+        });
     }
 
     @Override
@@ -83,17 +116,14 @@ public class SelectDifficultyActivity extends ActionBarActivity implements Obser
     }
 
     private void setRemoteLocation() {
-        SharedPreferences sharedpreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
-        final String userName = sharedpreferences.getString(USERNAME, null);
-
         LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
         locationUpdater = new LocationUpdater(locationManager, this);
         locationUpdater.addObserver(this);
 
-        handleStartGameButton(userName);
+        handleStartGameButton();
     }
 
-    private void handleStartGameButton(final String userName) {
+    private void handleStartGameButton() {
         Button b = (Button) findViewById(R.id.buttonFindOpponent);
         final GeoFire geoFire = new GeoFire(new Firebase("https://n-puzzle-bram-daniel.firebaseio.com/playersWaiting"));
         myFirebaseRef = new Firebase("https://n-puzzle-bram-daniel.firebaseio.com/users");
