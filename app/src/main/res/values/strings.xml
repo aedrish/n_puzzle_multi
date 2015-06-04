@@ -11,6 +11,7 @@
     <string name="solution">Solution</string>
     <string name="got_it">Got it!</string>
 
+    <string name="difficulty_very_easy">Very easy</string>
     <string name="difficulty_easy">Easy</string>
     <string name="difficulty_medium">Medium</string>
     <string name="difficulty_hard">Hard</string>

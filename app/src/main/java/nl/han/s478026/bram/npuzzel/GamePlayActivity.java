@@ -54,10 +54,6 @@ public class GamePlayActivity extends ActionBarActivity {
     private static final int PLAYTIME = 60*1000;
     private static final String MyPREFERENCES = "npuzzel_file";
     private static final String USERNAME = "usernameKey";
-    private static final int DIFFICULTY_VERY_EASY = 2;
-    private static final int DIFFICULTY_EASY = 3;
-    private static final int DIFFICULTY_MEDIUM = 4;
-    private static final int DIFFICULTY_HARD = 5;
 
     private int timeLeft;
     private int minutes;
@@ -134,10 +130,9 @@ public class GamePlayActivity extends ActionBarActivity {
 
         ListView list = new ListView(this);
         final ArrayList<String> difficulty = new ArrayList<>();
-        difficulty.add("very easy");
-        difficulty.add("easy");
-        difficulty.add("medium");
-        difficulty.add("hard");
+        for(Difficulty item: Difficulty.values()) {
+            difficulty.add(String.valueOf(getText(item.getDifficulty())));
+        }
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, difficulty);
         list.setAdapter(adapter);
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -465,20 +460,20 @@ public class GamePlayActivity extends ActionBarActivity {
     public int getNumberOfTiles(String difficulty) {
         switch(difficulty) {
             case "very easy":
-                minutes = 5;
-                return DIFFICULTY_VERY_EASY;
+                minutes = Difficulty.VERY_EASY.getMinutes();
+                return Difficulty.VERY_EASY.getNumberOfTiles();
             case "easy":
-                minutes = 10;
-                return DIFFICULTY_EASY;
+                minutes = Difficulty.EASY.getMinutes();
+                return Difficulty.EASY.getNumberOfTiles();
             case "medium":
-                minutes = 15;
-                return DIFFICULTY_MEDIUM;
+                minutes = Difficulty.MEDIUM.getMinutes();
+                return Difficulty.MEDIUM.getNumberOfTiles();
             case "hard":
-                minutes = 20;
-                return DIFFICULTY_HARD;
+                minutes = Difficulty.HARD.getMinutes();
+                return Difficulty.HARD.getNumberOfTiles();
             default:
-                minutes = 15;
-                return DIFFICULTY_MEDIUM;
+                minutes = Difficulty.MEDIUM.getMinutes();
+                return Difficulty.MEDIUM.getNumberOfTiles();
         }
     }
 
