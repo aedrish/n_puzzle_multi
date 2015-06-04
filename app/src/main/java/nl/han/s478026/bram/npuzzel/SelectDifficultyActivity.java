@@ -173,7 +173,7 @@ public class SelectDifficultyActivity extends ActionBarActivity implements Obser
                                         geoQuery.removeAllListeners();
                                         geoFire.removeLocation(userName);
                                         startActivity(intent);
-                                        resetLocation();
+//                                        resetLocation();
                                     }
                                 }
 
