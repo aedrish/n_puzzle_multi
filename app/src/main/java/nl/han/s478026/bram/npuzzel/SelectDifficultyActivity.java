@@ -1,5 +1,7 @@
 package nl.han.s478026.bram.npuzzel;
 
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -11,6 +13,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -46,6 +49,9 @@ public class SelectDifficultyActivity extends ActionBarActivity implements Obser
 
     private double radius = 0.5;
     private String userName;
+    ArrayList<HistoryFragmentRowItem> dataForFragment = new ArrayList<>();
+
+    private HistoryFragment historyFragment = new HistoryFragment();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,12 +59,10 @@ public class SelectDifficultyActivity extends ActionBarActivity implements Obser
         setContentView(R.layout.activity_select_difficulty);
 
         fillHistoryList();
-//        FragmentManager fragmentManager = getFragmentManager();
-//        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-
-//        HistoryFragment fragment = new HistoryFragment();
-//        fragmentTransaction.add(R.id.fragment_container, fragment);
-//        fragmentTransaction.commit();
+        FragmentManager fragmentManager = getFragmentManager();
+        FragmentTransaction  fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.add(R.id.history_frame, historyFragment);
+        fragmentTransaction.commit();
     }
 
     private void fillHistoryList() {
@@ -68,13 +72,25 @@ public class SelectDifficultyActivity extends ActionBarActivity implements Obser
         final ListView historyList = (ListView) findViewById(R.id.history_list);
         final ArrayList<String> nameList = new ArrayList<>();
 
-        Firebase ref = new Firebase("https://n-puzzle-bram-daniel.firebaseio.com/"+userName+"/history");
+        final String[] url = new String[1];
+        url[0] = "https://n-puzzle-bram-daniel.firebaseio.com/users/"+userName+"/history/";
+        final Firebase ref = new Firebase(url[0]);
         // Attach an listener to read the data at our posts reference
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
-                Log.d("checking firebase", "key"+snapshot.hasChildren());
+                for (DataSnapshot child: snapshot.getChildren()) {
+                    nameList.add(child.getKey());
+                }
                 historyList.setAdapter(new ArrayAdapter<>(SelectDifficultyActivity.this, android.R.layout.simple_list_item_1, nameList));
+                historyList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        String key = nameList.get(position);
+                        url[0] += key;
+                        getChildrenListForFragment(key, ref, url[0]);
+                    }
+                });
             }
 
             @Override
@@ -91,6 +107,29 @@ public class SelectDifficultyActivity extends ActionBarActivity implements Obser
             rb.setText(String.valueOf(getText(item.getDifficulty())));
             radiogroup.addView(rb);
         }
+    }
+
+    private void getChildrenListForFragment(String key, Firebase ref, final String url) {
+        ref.child(key).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                    FragmentTransaction tr = getFragmentManager().beginTransaction();
+                    Bundle bundle = new Bundle();
+                    bundle.putString("url", url);
+                    historyFragment = new HistoryFragment();
+                    historyFragment.setArguments(bundle);
+                    tr.replace(R.id.history_frame, historyFragment);
+                    tr.commit();
+
+
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+
+            }
+        });
     }
 
     @Override

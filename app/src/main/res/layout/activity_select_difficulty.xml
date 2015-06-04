@@ -20,6 +20,7 @@
         android:id="@+id/input_radius"
         android:layout_gravity="center_horizontal" />
 
+
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
@@ -51,16 +52,22 @@
         android:id="@+id/buttonFindOpponent"
         android:layout_gravity="center_horizontal" />
 
-
-    <ListView
-        android:layout_width="160dp"
-        android:layout_height="wrap_content"
-        android:id="@+id/history_list" />
-
     <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="223dp"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/fragment_container" />
+        android:baselineAligned="false">
 
+        <ListView
+            android:layout_width="140dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/history_list" />
+        <FrameLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:id="@+id/history_frame">
+
+        </FrameLayout>
+    </LinearLayout>
 </LinearLayout>
