@@ -51,4 +51,16 @@
         android:id="@+id/buttonFindOpponent"
         android:layout_gravity="center_horizontal" />
 
+
+    <ListView
+        android:layout_width="160dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/history_list" />
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="223dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/fragment_container" />
+
 </LinearLayout>
