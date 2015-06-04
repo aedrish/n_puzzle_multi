@@ -54,10 +54,6 @@ public class GamePlayActivity extends ActionBarActivity {
     private static final int PLAYTIME = 60*1000;
     private static final String MyPREFERENCES = "npuzzel_file";
     private static final String USERNAME = "usernameKey";
-    private static final int DIFFICULTY_VERY_EASY = 2;
-    private static final int DIFFICULTY_EASY = 3;
-    private static final int DIFFICULTY_MEDIUM = 4;
-    private static final int DIFFICULTY_HARD = 5;
 
     private int timeLeft;
     private int minutes;
@@ -134,10 +130,9 @@ public class GamePlayActivity extends ActionBarActivity {
 
         ListView list = new ListView(this);
         final ArrayList<String> difficulty = new ArrayList<>();
-        difficulty.add("very easy");
-        difficulty.add("easy");
-        difficulty.add("medium");
-        difficulty.add("hard");
+        for(Difficulty item: Difficulty.values()) {
+            difficulty.add(String.valueOf(getText(item.getDifficulty())));
+        }
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, difficulty);
         list.setAdapter(adapter);
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -295,27 +290,6 @@ public class GamePlayActivity extends ActionBarActivity {
     private void setItemClickListenerOnGridView(final int numberOfTiles, final GridView layout, final CustomPlayerGridViewAdapter imageAdapter) {
         final Firebase enemyIsFinishedListener = myFirebaseRef.child("users/"+ enemyUser + "/finished");
 
-        // Attach an listener to read the data at our posts reference
-        enemyIsFinishedListener.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot snapshot) {
-                if(snapshot.getValue() != null) {
-                    Boolean isEnemyFinished = (Boolean) snapshot.getValue();
-                    if(!isPlaying && isEnemyFinished) {
-                        Toast.makeText(GamePlayActivity.this, "both stopped!", Toast.LENGTH_LONG).show();
-                        GoToWinScreen();
-                    } else if(isEnemyFinished) {
-                        enemyIsFinished = true;
-                    }
-                }
-            }
-
-            @Override
-            public void onCancelled(FirebaseError firebaseError) {
-                System.out.println("The read failed: " + firebaseError.getMessage());
-            }
-        });
-
         layout.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -331,7 +305,26 @@ public class GamePlayActivity extends ActionBarActivity {
                             score = calculateScore();
                             setPlayerScore.setValue(score);
 
+                            // Attach an listener to read the data at our posts reference
+                            enemyIsFinishedListener.addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot snapshot) {
+                                    if (snapshot.getValue() != null) {
+                                        Boolean isEnemyFinished = (Boolean) snapshot.getValue();
+                                        if (!isPlaying && isEnemyFinished) {
+                                            Toast.makeText(GamePlayActivity.this, "both stopped!", Toast.LENGTH_LONG).show();
+                                            GoToWinScreen();
+                                        } else if (isEnemyFinished) {
+                                            enemyIsFinished = true;
+                                        }
+                                    }
+                                }
 
+                                @Override
+                                public void onCancelled(FirebaseError firebaseError) {
+                                    System.out.println("The read failed: " + firebaseError.getMessage());
+                                }
+                            });
 
                             if(!isPlaying && enemyIsFinished) {
                                 Toast.makeText(GamePlayActivity.this, "both stopped but you stopped last!", Toast.LENGTH_LONG).show();
@@ -352,6 +345,7 @@ public class GamePlayActivity extends ActionBarActivity {
                 if((long) dataSnapshot.getValue() > 0) {
                     final Intent intent = new Intent(GamePlayActivity.this, YouWinActivity.class);
                     intent.putExtra("yourScore", score);
+                    intent.putExtra("yourUserName", userName);
                     intent.putExtra("enemyUser", enemyUser);
                     intent.putExtra("resourceId", resourceId);
                     intent.putExtra("enemyScore", (long) dataSnapshot.getValue());
@@ -441,7 +435,6 @@ public class GamePlayActivity extends ActionBarActivity {
         adapter.setData(croppedImagesInGame);
         adapter.notifyDataSetChanged();
         layout.invalidateViews();
-//        layout.setAdapter(adapter);
 
         checkWinSituation();
         return checkWinSituation();
@@ -456,30 +449,26 @@ public class GamePlayActivity extends ActionBarActivity {
     }
 
     private boolean checkWinSituation() {
-        if(croppedImagesInGame.equals(croppedSolvedImages)) {
-            return true;
-        } else {
-            return false;
-        }
+        return croppedImagesInGame.equals(croppedSolvedImages);
     }
 
     public int getNumberOfTiles(String difficulty) {
         switch(difficulty) {
-            case "very easy":
-                minutes = 5;
-                return DIFFICULTY_VERY_EASY;
-            case "easy":
-                minutes = 10;
-                return DIFFICULTY_EASY;
-            case "medium":
-                minutes = 15;
-                return DIFFICULTY_MEDIUM;
-            case "hard":
-                minutes = 20;
-                return DIFFICULTY_HARD;
+            case "Very easy":
+                minutes = Difficulty.VERY_EASY.getMinutes();
+                return Difficulty.VERY_EASY.getNumberOfTiles();
+            case "Easy":
+                minutes = Difficulty.EASY.getMinutes();
+                return Difficulty.EASY.getNumberOfTiles();
+            case "Medium":
+                minutes = Difficulty.MEDIUM.getMinutes();
+                return Difficulty.MEDIUM.getNumberOfTiles();
+            case "Hard":
+                minutes = Difficulty.HARD.getMinutes();
+                return Difficulty.HARD.getNumberOfTiles();
             default:
-                minutes = 15;
-                return DIFFICULTY_MEDIUM;
+                minutes = Difficulty.MEDIUM.getMinutes();
+                return Difficulty.MEDIUM.getNumberOfTiles();
         }
     }
 
@@ -495,8 +484,8 @@ public class GamePlayActivity extends ActionBarActivity {
         int id = item.getItemId();
         if (id == R.id.action_settings) {
             return true;
-        } else if(id == R.id.change_difficulty) {
-            addPopUp();
+//        } else if(id == R.id.change_difficulty) {
+//            addPopUp();
         } else if(id == R.id.reset_puzzle) {
             start();
         } else if(id == R.id.show_solution) {
