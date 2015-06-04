@@ -9,6 +9,10 @@ import android.view.animation.AlphaAnimation;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.firebase.client.Firebase;
+
+import java.util.UUID;
+
 import static nl.han.s478026.bram.npuzzel.R.string.enemy_points;
 import static nl.han.s478026.bram.npuzzel.R.string.your_points;
 
@@ -24,22 +28,33 @@ public class YouWinActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_you_win);
+        Firebase.setAndroidContext(this);
 
         TextView yourScoreTextView = (TextView) findViewById(R.id.your_score);
         TextView enemyScoreTextView = (TextView) findViewById(R.id.enemy_score);
 
-
         Intent intent = getIntent();
+        String userName = intent.getStringExtra("yourUserName");
         int resourceId = intent.getIntExtra("resourceId", 0);
         int yourScore = intent.getIntExtra("yourScore", 0);
         int enemyScore = (int) intent.getLongExtra("enemyScore", 0);
+        String enemyUserName = intent.getStringExtra("enemyUser");
 
-        yourScoreTextView.setText(getResources().getText(your_points) + "" +  yourScore);
-        enemyScoreTextView.setText(getResources().getText(enemy_points) + "" +  enemyScore);
-        ImageView iv = (ImageView) findViewById(R.id.imageViewResult);
+        Firebase myFirebaseRef =  new Firebase("https://n-puzzle-bram-daniel.firebaseio.com/users/" + userName);
+        Firebase match = myFirebaseRef.child("/history/" + enemyUserName + "/" + UUID.randomUUID().toString());
+        match.child("yourScore").setValue(yourScore);
+        match.child("opponentScore").setValue(enemyScore);
+        match.child("resourceID").setValue(resourceId);
 
         TextView tvwl = (TextView) findViewById(R.id.win_lose_text);
-        setWinLoseText(yourScore, enemyScore, tvwl);
+        match.child("didWon").setValue(setWinLoseText(yourScore, enemyScore, tvwl));
+
+        yourScoreTextView.setText(getResources().getText(your_points) + "" + yourScore);
+        enemyScoreTextView.setText(getResources().getText(enemy_points) + "" + enemyScore);
+        ImageView iv = (ImageView) findViewById(R.id.imageViewResult);
+
+
+
         iv.setImageResource(resourceId);
         AlphaAnimation animation1 = new AlphaAnimation(0.f, 1.0f);
         animation1.setDuration(5000);
@@ -50,11 +65,13 @@ public class YouWinActivity extends ActionBarActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
-    private void setWinLoseText(int yourScore, int enemyScore, TextView tvwl) {
+    private boolean setWinLoseText(int yourScore, int enemyScore, TextView tvwl) {
         if(yourScore > enemyScore) {
-            tvwl.setText(R.string.you_won);
+            tvwl.setText(getString(R.string.you_won));
+            return true;
         } else {
-            tvwl.setText(R.string.you_lost);
+            tvwl.setText(getString(R.string.you_lost));
+            return false;
         }
     }
 

@@ -290,27 +290,6 @@ public class GamePlayActivity extends ActionBarActivity {
     private void setItemClickListenerOnGridView(final int numberOfTiles, final GridView layout, final CustomPlayerGridViewAdapter imageAdapter) {
         final Firebase enemyIsFinishedListener = myFirebaseRef.child("users/"+ enemyUser + "/finished");
 
-        // Attach an listener to read the data at our posts reference
-        enemyIsFinishedListener.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot snapshot) {
-                if(snapshot.getValue() != null) {
-                    Boolean isEnemyFinished = (Boolean) snapshot.getValue();
-                    if(!isPlaying && isEnemyFinished) {
-                        Toast.makeText(GamePlayActivity.this, "both stopped!", Toast.LENGTH_LONG).show();
-                        GoToWinScreen();
-                    } else if(isEnemyFinished) {
-                        enemyIsFinished = true;
-                    }
-                }
-            }
-
-            @Override
-            public void onCancelled(FirebaseError firebaseError) {
-                System.out.println("The read failed: " + firebaseError.getMessage());
-            }
-        });
-
         layout.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -326,7 +305,26 @@ public class GamePlayActivity extends ActionBarActivity {
                             score = calculateScore();
                             setPlayerScore.setValue(score);
 
+                            // Attach an listener to read the data at our posts reference
+                            enemyIsFinishedListener.addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot snapshot) {
+                                    if (snapshot.getValue() != null) {
+                                        Boolean isEnemyFinished = (Boolean) snapshot.getValue();
+                                        if (!isPlaying && isEnemyFinished) {
+                                            Toast.makeText(GamePlayActivity.this, "both stopped!", Toast.LENGTH_LONG).show();
+                                            GoToWinScreen();
+                                        } else if (isEnemyFinished) {
+                                            enemyIsFinished = true;
+                                        }
+                                    }
+                                }
 
+                                @Override
+                                public void onCancelled(FirebaseError firebaseError) {
+                                    System.out.println("The read failed: " + firebaseError.getMessage());
+                                }
+                            });
 
                             if(!isPlaying && enemyIsFinished) {
                                 Toast.makeText(GamePlayActivity.this, "both stopped but you stopped last!", Toast.LENGTH_LONG).show();
@@ -347,6 +345,7 @@ public class GamePlayActivity extends ActionBarActivity {
                 if((long) dataSnapshot.getValue() > 0) {
                     final Intent intent = new Intent(GamePlayActivity.this, YouWinActivity.class);
                     intent.putExtra("yourScore", score);
+                    intent.putExtra("yourUserName", userName);
                     intent.putExtra("enemyUser", enemyUser);
                     intent.putExtra("resourceId", resourceId);
                     intent.putExtra("enemyScore", (long) dataSnapshot.getValue());
@@ -436,7 +435,6 @@ public class GamePlayActivity extends ActionBarActivity {
         adapter.setData(croppedImagesInGame);
         adapter.notifyDataSetChanged();
         layout.invalidateViews();
-//        layout.setAdapter(adapter);
 
         checkWinSituation();
         return checkWinSituation();
@@ -451,25 +449,21 @@ public class GamePlayActivity extends ActionBarActivity {
     }
 
     private boolean checkWinSituation() {
-        if(croppedImagesInGame.equals(croppedSolvedImages)) {
-            return true;
-        } else {
-            return false;
-        }
+        return croppedImagesInGame.equals(croppedSolvedImages);
     }
 
     public int getNumberOfTiles(String difficulty) {
         switch(difficulty) {
-            case "very easy":
+            case "Very easy":
                 minutes = Difficulty.VERY_EASY.getMinutes();
                 return Difficulty.VERY_EASY.getNumberOfTiles();
-            case "easy":
+            case "Easy":
                 minutes = Difficulty.EASY.getMinutes();
                 return Difficulty.EASY.getNumberOfTiles();
-            case "medium":
+            case "Medium":
                 minutes = Difficulty.MEDIUM.getMinutes();
                 return Difficulty.MEDIUM.getNumberOfTiles();
-            case "hard":
+            case "Hard":
                 minutes = Difficulty.HARD.getMinutes();
                 return Difficulty.HARD.getNumberOfTiles();
             default:
@@ -490,8 +484,8 @@ public class GamePlayActivity extends ActionBarActivity {
         int id = item.getItemId();
         if (id == R.id.action_settings) {
             return true;
-        } else if(id == R.id.change_difficulty) {
-            addPopUp();
+//        } else if(id == R.id.change_difficulty) {
+//            addPopUp();
         } else if(id == R.id.reset_puzzle) {
             start();
         } else if(id == R.id.show_solution) {

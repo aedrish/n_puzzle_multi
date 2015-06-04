@@ -17,6 +17,7 @@ import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
@@ -39,6 +40,7 @@ public class SelectDifficultyActivity extends ActionBarActivity implements Obser
 
     private static final String MyPREFERENCES = "npuzzel_file";
     private static final String USERNAME = "usernameKey";
+    private RadioGroup radiogroup;
 
     private double radius = 0.5;
 
@@ -46,6 +48,12 @@ public class SelectDifficultyActivity extends ActionBarActivity implements Obser
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_select_difficulty);
+        radiogroup = (RadioGroup) findViewById(R.id.radioGroup);
+        for (Difficulty item: Difficulty.values()) {
+            RadioButton rb = new RadioButton(SelectDifficultyActivity.this);
+            rb.setText(String.valueOf(getText(item.getDifficulty())));
+            radiogroup.addView(rb);
+        }
     }
 
     @Override
@@ -104,8 +112,11 @@ public class SelectDifficultyActivity extends ActionBarActivity implements Obser
             public void onClick(View view) {
                 final WaitingDialog waitingDialog = new WaitingDialog(SelectDifficultyActivity.this, getString(R.string.searching_opponent), getString(R.string.locating_opponent));
 
-                geoFire.setLocation(userName, new GeoLocation(currentLocation.getLatitude(), currentLocation.getLongitude()));
-                final GeoQuery geoQuery = geoFire.queryAtLocation(new GeoLocation(currentLocation.getLatitude(), currentLocation.getLongitude()), getRadius());
+                GeoLocation myGeoLocation = new GeoLocation(currentLocation.getLatitude(), currentLocation.getLongitude());
+//                geoFire.setLocation(userName, new GeoLocation(currentLocation.getLatitude(), currentLocation.getLongitude()));
+                geoFire.setLocation(userName, myGeoLocation);
+//                final GeoQuery geoQuery = geoFire.queryAtLocation(new GeoLocation(currentLocation.getLatitude(), currentLocation.getLongitude()), getRadius());
+                final GeoQuery geoQuery = geoFire.queryAtLocation(myGeoLocation, getRadius());
 
                 final String difficulty = getDifficulty();
                 final Intent intent = new Intent(SelectDifficultyActivity.this, GameStartActivity.class);
@@ -116,26 +127,27 @@ public class SelectDifficultyActivity extends ActionBarActivity implements Obser
                 geoQuery.addGeoQueryEventListener(new GeoQueryEventListener() {
                     @Override
                     public void onKeyEntered(final String key, GeoLocation location) {
-                        Firebase enemyRef = new Firebase("https://n-puzzle-bram-daniel.firebaseio.com/users/" + key + "/difficulty");
-                        enemyRef.addValueEventListener(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(DataSnapshot dataSnapshot) {
-                                String enemyDifficulty = (String) dataSnapshot.getValue();
-
-                                if (!userName.equals(key) && enemyDifficulty.equals(difficulty)) {
-                                    waitingDialog.dismiss();
-                                    intent.putExtra("enemy", key);
-                                    geoQuery.removeAllListeners();
-                                    geoFire.removeLocation(userName);
-                                    startActivity(intent);
-                                    resetLocation();
+                        if (!userName.equals(key)) {
+                            Firebase enemyRef = new Firebase("https://n-puzzle-bram-daniel.firebaseio.com/users/" + key + "/difficulty");
+                            enemyRef.addValueEventListener(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                    String enemyDifficulty = (String) dataSnapshot.getValue();
+                                    if (enemyDifficulty.equals(difficulty)) {
+                                        waitingDialog.dismiss();
+                                        intent.putExtra("enemy", key);
+                                        geoQuery.removeAllListeners();
+                                        geoFire.removeLocation(userName);
+                                        startActivity(intent);
+                                        resetLocation();
+                                    }
                                 }
-                            }
 
-                            @Override
-                            public void onCancelled(FirebaseError firebaseError) {
-                            }
-                        });
+                                @Override
+                                public void onCancelled(FirebaseError firebaseError) {
+                                }
+                            });
+                        }
                     }
 
                     @Override
@@ -166,9 +178,9 @@ public class SelectDifficultyActivity extends ActionBarActivity implements Obser
     }
 
     private String getDifficulty() {
-        RadioGroup radiogroup = (RadioGroup) findViewById(R.id.radioGroup);
+        radiogroup = (RadioGroup) findViewById(R.id.radioGroup);
         RadioButton radioButton = (RadioButton) findViewById(radiogroup.getCheckedRadioButtonId());
-        return (String) radioButton.getTag();
+        return (String) radioButton.getText();
     }
 
     private void resetLocation() {
