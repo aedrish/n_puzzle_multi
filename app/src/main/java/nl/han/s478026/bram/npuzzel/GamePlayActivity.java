@@ -73,7 +73,7 @@ public class GamePlayActivity extends ActionBarActivity {
     private String userName;
 
     private GridView layout, layout2;
-    private ValueEventListener eventListener, eventListenerWin, enemyEventListener;
+    private ValueEventListener eventListener;
     private CountDownTimer countDown;
     private Boolean enemyIsFinished = false;
 
@@ -216,7 +216,7 @@ public class GamePlayActivity extends ActionBarActivity {
         };
 
         c.start();
-        setItemClickListenerOnGridView(numberOfTiles, layout, imageAdapter, resourceId);
+        setItemClickListenerOnGridView(numberOfTiles, layout, imageAdapter);
     }
 
     private void StartCountdownTimer(String time) {
@@ -287,7 +287,30 @@ public class GamePlayActivity extends ActionBarActivity {
 
     }
 
-    private void setItemClickListenerOnGridView(final int numberOfTiles, final GridView layout, final CustomPlayerGridViewAdapter imageAdapter, final int resourceId) {
+    private void setItemClickListenerOnGridView(final int numberOfTiles, final GridView layout, final CustomPlayerGridViewAdapter imageAdapter) {
+        final Firebase enemyIsFinishedListener = myFirebaseRef.child("users/"+ enemyUser + "/finished");
+
+        // Attach an listener to read the data at our posts reference
+        enemyIsFinishedListener.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                if(snapshot.getValue() != null) {
+                    Boolean isEnemyFinished = (Boolean) snapshot.getValue();
+                    if(!isPlaying && isEnemyFinished) {
+                        Toast.makeText(GamePlayActivity.this, "both stopped!", Toast.LENGTH_LONG).show();
+                        GoToWinScreen();
+                    } else if(isEnemyFinished) {
+                        enemyIsFinished = true;
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+                System.out.println("The read failed: " + firebaseError.getMessage());
+            }
+        });
+
         layout.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -303,32 +326,10 @@ public class GamePlayActivity extends ActionBarActivity {
                             score = calculateScore();
                             setPlayerScore.setValue(score);
 
-                            Firebase enemyIsFinishedListener = myFirebaseRef.child("users/"+ enemyUser + "/finished");
 
-                            // Attach an listener to read the data at our posts reference
-                            eventListenerWin = enemyIsFinishedListener.addValueEventListener(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(DataSnapshot snapshot) {
-                                    if(snapshot.getValue() != null) {
-                                        Boolean isEnemyFinished = (Boolean) snapshot.getValue();
-                                        if(!isPlaying && isEnemyFinished) {
-                                            Toast.makeText(GamePlayActivity.this, "both stopped!", Toast.LENGTH_LONG).show();
-                                            GoToWinScreen();
-                                        } else if(isEnemyFinished) {
-                                            enemyIsFinished = true;
-                                        }
-                                    }
-                                }
-
-                                @Override
-                                public void onCancelled(FirebaseError firebaseError) {
-                                    System.out.println("The read failed: " + firebaseError.getMessage());
-                                }
-                            });
 
                             if(!isPlaying && enemyIsFinished) {
                                 Toast.makeText(GamePlayActivity.this, "both stopped but you stopped last!", Toast.LENGTH_LONG).show();
-                                isDone.removeEventListener(eventListenerWin);
                                 GoToWinScreen();
                             }
                         }
@@ -340,7 +341,7 @@ public class GamePlayActivity extends ActionBarActivity {
 
     private void GoToWinScreen() {
         enemyScore = myFirebaseRef.child("users/" + enemyUser + "/score");
-        enemyEventListener = enemyScore.addValueEventListener(new ValueEventListener() {
+        enemyScore.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if((long) dataSnapshot.getValue() > 0) {
@@ -508,22 +509,9 @@ public class GamePlayActivity extends ActionBarActivity {
     }
 
     private void removeDataFromFirebase() {
-        Firebase enemy = myFirebaseRef.child("users/" + userName + "/clicked_tile");
-        Firebase finished = myFirebaseRef.child("users/" + userName + "/finished");
-        Firebase usedStepsInGame = myFirebaseRef.child("users/" + userName + "/usedSteps");
-        Firebase difficulty = myFirebaseRef.child("users/" + userName + "/difficulty");
-        difficulty.removeValue();
-        if(eventListener != null) {
-            enemy.removeEventListener(eventListener);
-        }
-        if(eventListenerWin != null) {
-            isDone.removeEventListener(eventListenerWin);
-        }
-        if(enemyEventListener != null) {
-            enemyScore.removeEventListener(enemyEventListener);
-        }
-        enemy.removeValue();
-        finished.removeValue();
-        usedStepsInGame.removeValue();
+        myFirebaseRef.child("users/" + userName + "/clicked_tile").removeValue();
+        myFirebaseRef.child("users/" + userName + "/finished").removeValue();
+        myFirebaseRef.child("users/" + userName + "/usedSteps").removeValue();
+        myFirebaseRef.child("users/" + userName + "/difficulty").removeValue();
     }
 }
