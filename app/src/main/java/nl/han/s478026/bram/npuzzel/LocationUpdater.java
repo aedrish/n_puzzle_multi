@@ -11,7 +11,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
-import android.widget.Toast;
+//import android.widget.Toast;
 
 import java.util.List;
 import java.util.Observable;
@@ -49,7 +49,7 @@ public class LocationUpdater extends Observable {
         locationListener = new LocationListener() {
             public void onLocationChanged(Location location) {
                 waitingDialog.dismiss();
-                Toast.makeText(parentContext, "Updated location to " + location.getLatitude(), Toast.LENGTH_SHORT).show();
+//                Toast.makeText(parentContext, "Updated location to " + location.getLatitude(), Toast.LENGTH_SHORT).show();
                 setChanged();
                 notifyObservers(location);
             }

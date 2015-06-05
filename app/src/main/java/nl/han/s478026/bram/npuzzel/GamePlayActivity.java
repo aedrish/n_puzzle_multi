@@ -312,7 +312,7 @@ public class GamePlayActivity extends ActionBarActivity {
                                     if (snapshot.getValue() != null) {
                                         Boolean isEnemyFinished = (Boolean) snapshot.getValue();
                                         if (!isPlaying && isEnemyFinished) {
-                                            Toast.makeText(GamePlayActivity.this, "both stopped!", Toast.LENGTH_LONG).show();
+//                                            Toast.makeText(GamePlayActivity.this, "both stopped!", Toast.LENGTH_LONG).show();
                                             GoToWinScreen();
                                         } else if (isEnemyFinished) {
                                             enemyIsFinished = true;
@@ -327,7 +327,7 @@ public class GamePlayActivity extends ActionBarActivity {
                             });
 
                             if(!isPlaying && enemyIsFinished) {
-                                Toast.makeText(GamePlayActivity.this, "both stopped but you stopped last!", Toast.LENGTH_LONG).show();
+//                                Toast.makeText(GamePlayActivity.this, "both stopped but you stopped last!", Toast.LENGTH_LONG).show();
                                 GoToWinScreen();
                             }
                         }

@@ -51,7 +51,6 @@ public class HistoryFragment extends Fragment {
                             data.add(detailItem);
 
                     }
-//                    SelectDifficultyActivity activity = (SelectDifficultyActivity) getActivity();
                     ListView detail = (ListView) getView().findViewById(R.id.history_detail);
                     detail.setAdapter(new HistoryFragmentListAdapter(
                             getView().getContext(),
