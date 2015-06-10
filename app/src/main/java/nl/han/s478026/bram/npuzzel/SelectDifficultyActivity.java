@@ -72,9 +72,8 @@ public class SelectDifficultyActivity extends ActionBarActivity implements Obser
         final ListView historyList = (ListView) findViewById(R.id.history_list);
         final ArrayList<String> nameList = new ArrayList<>();
 
-        final String[] url = new String[1];
-        url[0] = "https://n-puzzle-bram-daniel.firebaseio.com/users/"+userName+"/history/";
-        final Firebase ref = new Firebase(url[0]);
+        final String url = "https://n-puzzle-bram-daniel.firebaseio.com/users/"+userName+"/history/";
+        final Firebase ref = new Firebase(url);
         // Attach an listener to read the data at our posts reference
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -87,8 +86,9 @@ public class SelectDifficultyActivity extends ActionBarActivity implements Obser
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                         String key = nameList.get(position);
-                        url[0] += key;
-                        getChildrenListForFragment(key, ref, url[0]);
+                        String urlOfOpponent = url.concat(key);
+                        Log.d("The url to use is " , ""+ urlOfOpponent);
+                        getChildrenListForFragment(key, ref, urlOfOpponent);
                     }
                 });
             }
@@ -113,7 +113,6 @@ public class SelectDifficultyActivity extends ActionBarActivity implements Obser
         ref.child(key).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-
                     FragmentTransaction tr = getFragmentManager().beginTransaction();
                     Bundle bundle = new Bundle();
                     bundle.putString("url", url);
@@ -121,8 +120,6 @@ public class SelectDifficultyActivity extends ActionBarActivity implements Obser
                     historyFragment.setArguments(bundle);
                     tr.replace(R.id.history_frame, historyFragment);
                     tr.commit();
-
-
             }
 
             @Override

@@ -9,8 +9,13 @@ import android.view.animation.AlphaAnimation;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
+import com.firebase.client.FirebaseError;
+import com.firebase.client.ValueEventListener;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import static nl.han.s478026.bram.npuzzel.R.string.enemy_points;
@@ -52,8 +57,6 @@ public class YouWinActivity extends ActionBarActivity {
         yourScoreTextView.setText(getResources().getText(your_points) + "" + yourScore);
         enemyScoreTextView.setText(getResources().getText(enemy_points) + "" + enemyScore);
         ImageView iv = (ImageView) findViewById(R.id.imageViewResult);
-
-
 
         iv.setImageResource(resourceId);
         AlphaAnimation animation1 = new AlphaAnimation(0.f, 1.0f);

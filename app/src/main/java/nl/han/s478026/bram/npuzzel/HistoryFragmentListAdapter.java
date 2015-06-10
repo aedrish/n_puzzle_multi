@@ -31,9 +31,11 @@ public class HistoryFragmentListAdapter extends ArrayAdapter<HistoryFragmentRowI
     @Override
     public View getView(int position, View convertView, ViewGroup parent)
     {
-        View row = convertView;
+        View row;
         RecordHolder holder;
-        if (row == null) {
+        if(convertView != null){
+            return convertView;
+        }else {
             LayoutInflater inflater = ((Activity) context).getLayoutInflater();
             row = inflater.inflate(layoutResourceId, parent, false);
             holder = new RecordHolder();
@@ -42,10 +44,7 @@ public class HistoryFragmentListAdapter extends ArrayAdapter<HistoryFragmentRowI
             holder.historyOpponentScore = (TextView) row.findViewById(R.id.history_opponent_score);
             holder.didYouWon = (TextView) row.findViewById(R.id.did_you_won);
 
-
             row.setTag(holder);
-        } else {
-            holder = (RecordHolder) row.getTag();
         }
         HistoryFragmentRowItem item = data.get(position);
         holder.imageItem.setImageResource((int) item.getResourceId());
