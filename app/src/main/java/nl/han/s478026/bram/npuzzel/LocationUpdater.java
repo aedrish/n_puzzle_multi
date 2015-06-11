@@ -80,7 +80,7 @@ public class LocationUpdater extends Observable {
 
         alertDialog.setView(dv);
         alertDialog.show();
-        alertDialog.setCanceledOnTouchOutside(true);
+        alertDialog.setCanceledOnTouchOutside(false);
     }
 
     private Button addDialogButton(final AlertDialog alertDialog, String text){
@@ -102,11 +102,7 @@ public class LocationUpdater extends Observable {
         List<String> providers = locationManager.getProviders(true);
         Log.d("Listing providers", providers + "");
 
-        if (providers.size() == 1){
-            return false;
-        }else{
-            return true;
-        }
+        return providers.size() != 1;
     }
 
     @Override

@@ -39,29 +39,6 @@ public class MainCustomGridViewAdapter extends ArrayAdapter<ImageItem> {
         this.data = data;
         this.rows = rows;
         this.screenWidth = screenWidth;
-        //setMaxImageHeight();
-    }
-
-    private void setMaxImageHeight() {
-        int i = 0;
-        ImageItem rowItem1 = null;
-        ImageItem rowItem2;
-        for(ImageItem item: data) {
-            if(i % rows == 0) {
-                rowItem1 = item;
-                if(data.size() == i) {
-                    rowHeight.add(rowItem1);
-                }
-            } else {
-                rowItem2 = item;
-                if(rowItem1.getBitmap().getHeight() > rowItem2.getBitmap().getHeight()) {
-                    rowHeight.add(rowItem1);
-                } else {
-                    rowHeight.add(rowItem2);
-                }
-            }
-            i++;
-        }
     }
 
     public int getRowHeight(int position) {

@@ -1,6 +1,8 @@
 package nl.han.s478026.bram.npuzzel;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v7.app.ActionBarActivity;
@@ -10,8 +12,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
+import com.firebase.client.FirebaseError;
+import com.firebase.client.ValueEventListener;
 
 
 /**
@@ -50,20 +56,48 @@ public class MainActivity extends ActionBarActivity {
             b.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Firebase userRefs = myFirebaseRef.child("users");
-                    User user = new User(username.getText().toString());
-                    userRefs.child(username.getText().toString()).setValue(user);
+                    final Firebase userRefs = myFirebaseRef.child("users/" + username.getText().toString());
+                    userRefs.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            if (!dataSnapshot.exists()) {
+                                saveUserAndIntent(userRefs);
+                            } else {
+                                final AlertDialog al = new AlertDialog.Builder(MainActivity.this).create();
+                                al.setTitle(getText(R.string.username_already_exists_title));
+                                al.setMessage(getText(R.string.username_already_exists_message));
+                                al.setButton(DialogInterface.BUTTON_POSITIVE, getResources().getString(R.string.got_it),
+                                        new DialogInterface.OnClickListener() {
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                al.dismiss();
+                                            }
+                                        });
+                                al.show();
+                            }
+                        }
 
-                    SharedPreferences.Editor editor = sharedpreferences.edit();
-                    editor.putString(USERNAME, username.getText().toString());
-                    editor.commit();
-                    Intent intent = new Intent(MainActivity.this, SelectDifficultyActivity.class);
-                    intent.putExtra("username", username.getText().toString());
-                    startActivity(intent);
-                    finish();
+                        @Override
+                        public void onCancelled(FirebaseError firebaseError) {
+
+                        }
+                    });
+//                    saveUserAndIntent(userRefs);
                 }
             });
         }
+    }
+
+    private void saveUserAndIntent(Firebase userRefs) {
+        User user = new User(username.getText().toString());
+        userRefs.setValue(user);
+
+        SharedPreferences.Editor editor = sharedpreferences.edit();
+        editor.putString(USERNAME, username.getText().toString());
+        editor.apply();
+        Intent intent = new Intent(MainActivity.this, SelectDifficultyActivity.class);
+        intent.putExtra("username", username.getText().toString());
+        startActivity(intent);
+        finish();
     }
 
     @Override

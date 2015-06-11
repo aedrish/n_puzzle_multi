@@ -183,9 +183,7 @@ public class SelectDifficultyActivity extends ActionBarActivity implements Obser
                 final WaitingDialog waitingDialog = new WaitingDialog(SelectDifficultyActivity.this, getString(R.string.searching_opponent), getString(R.string.locating_opponent));
 
                 GeoLocation myGeoLocation = new GeoLocation(currentLocation.getLatitude(), currentLocation.getLongitude());
-//                geoFire.setLocation(userName, new GeoLocation(currentLocation.getLatitude(), currentLocation.getLongitude()));
                 geoFire.setLocation(userName, myGeoLocation);
-//                final GeoQuery geoQuery = geoFire.queryAtLocation(new GeoLocation(currentLocation.getLatitude(), currentLocation.getLongitude()), getRadius());
                 final GeoQuery geoQuery = geoFire.queryAtLocation(myGeoLocation, getRadius());
 
                 final String difficulty = getDifficulty();
