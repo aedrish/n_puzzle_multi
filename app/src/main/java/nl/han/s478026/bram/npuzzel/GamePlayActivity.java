@@ -256,7 +256,7 @@ public class GamePlayActivity extends ActionBarActivity {
 
         ArrayList<CroppedImage> test = new ArrayList<>();
         for(CroppedImage item: enemyImagesInGame) {
-            item.setHoogte(50);
+            item.setImageHeight(50);
             item.recreateImage();
             test.add(item);
         }

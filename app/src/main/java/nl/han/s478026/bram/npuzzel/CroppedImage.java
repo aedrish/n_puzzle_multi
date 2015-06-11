@@ -13,19 +13,19 @@ public class CroppedImage {
     private int position;
     private int x;
     private int y;
-    private int breedte;
-    private int hoogte;
+    private int imageWidth;
+    private int imageHeight;
     private boolean lastImage;
 
-    public CroppedImage(Bitmap image, int x, int y, int breedte, int hoogte, int position, boolean lastImage) {
+    public CroppedImage(Bitmap image, int x, int y, int imageWidth, int imageHeight, int position, boolean lastImage) {
         this.image = image;
         this.x = x;
         this.y = y;
-        this.breedte = breedte;
-        this.hoogte = hoogte;
+        this.imageWidth = imageWidth;
+        this.imageHeight = imageHeight;
         this.position = position;
         if(image != null) {
-            this.croppedImage = Bitmap.createBitmap(this.image, this.x * this.breedte, this.y * this.hoogte, this.breedte, this.hoogte);
+            this.croppedImage = Bitmap.createBitmap(this.image, this.x * this.imageWidth, this.y * this.imageHeight, this.imageWidth, this.imageHeight);
         }
         this.lastImage = lastImage;
     }
@@ -46,20 +46,20 @@ public class CroppedImage {
         this.y = y;
     }
 
-    public int getBreedte() {
-        return breedte;
+    public int getImageWidth() {
+        return imageWidth;
     }
 
-    public void setBreedte(int breedte) {
-        this.breedte = breedte;
+    public void setImageWidth(int imageWidth) {
+        this.imageWidth = imageWidth;
     }
 
-    public int getHoogte() {
-        return hoogte;
+    public int getImageHeight() {
+        return imageHeight;
     }
 
-    public void setHoogte(int hoogte) {
-        this.hoogte = hoogte;
+    public void setImageHeight(int imageHeight) {
+        this.imageHeight = imageHeight;
     }
 
     public Bitmap getCroppedImage() {
@@ -91,7 +91,7 @@ public class CroppedImage {
     public void setLastImage(boolean lastImage) { this.lastImage = lastImage; }
     public void recreateImage() {
         if(image != null) {
-            this.croppedImage = Bitmap.createBitmap(this.image, this.x * this.breedte, this.y * this.hoogte, this.breedte, this.hoogte);
+            this.croppedImage = Bitmap.createBitmap(this.image, this.x * this.imageWidth, this.y * this.imageHeight, this.imageWidth, this.imageHeight);
         }
     }
 

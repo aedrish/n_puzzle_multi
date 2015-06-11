@@ -50,8 +50,8 @@ public class HistoryFragmentListAdapter extends ArrayAdapter<HistoryFragmentRowI
         holder.imageItem.setImageResource((int) item.getResourceId());
         holder.historyUserScore.setText((int) item.getYourScore()+ "");
         holder.historyOpponentScore.setText((int) item.getOpponentScore()+ "");
-        holder.didYouWon.setText(item.isDidWon() ? context.getString(R.string.you_won) :
-                getContext().getString(R.string.you_lost) + "");
+        holder.didYouWon.setText(item.isDidWon() ? context.getString(R.string.fragment_won) :
+                getContext().getString(R.string.fragment_lost) + "");
         return row;
     }
     static class RecordHolder {

@@ -11,15 +11,15 @@
     <string name="solution">Solution</string>
     <string name="got_it">Got it!</string>
 
-    <string name="difficulty_very_easy">Very easy</string>
-    <string name="difficulty_easy">Easy</string>
-    <string name="difficulty_medium">Medium</string>
+    <string name="difficulty_very_easy" translatable="false">Very easy</string>
+    <string name="difficulty_easy" translatable="false">Easy</string>
+    <string name="difficulty_medium" translatable="false">Medium</string>
     <string name="difficulty_hard">Hard</string>
 
     <string name="title_activity_detail">Play</string>
     <string name="title_activity_you_win">Congratulations!</string>
     <string name="congratsulation">Congratulations, puzzle solved!</string>
-    <string name="title_activity_settings">SettingsActivity</string>
+    <string name="title_activity_settings" translatable="false">SettingsActivity</string>
 
     <string name="save_settings">Save</string>
     <string name="searching_for_opponent">Please wait, we are searching for an opponent</string>
@@ -27,7 +27,7 @@
     <string name="please_wait">Please wait while the opponennt is choosing a picture</string>
     <string name="select_picture"> Please select a picture to play with</string>
 
-    <string name="title_activity_game_start">GameStartActivity</string>
+    <string name="title_activity_game_start" translatable="false">GameStartActivity</string>
 
     <string name="hello_world">Hello world!</string>
     <string name="start_screen">Enter your username</string>
@@ -37,10 +37,12 @@
     <string name="opponent_still_playing">Please wait until your opponent is done</string>
     <string name="you_won">You won this match</string>
     <string name="you_lost">You lost this match</string>
+    <string name="fragment_won">Won</string>
+    <string name="fragment_lost">Lost</string>
     <string name="your_points">Your points:</string>
     <string name="enemy_points">Your opponent points:</string>
 
-    <string name="title_activity_select_difficulty">SelectDifficultyActivity</string>
+    <string name="title_activity_select_difficulty" translatable="false">SelectDifficultyActivity</string>
     <string name="no_active_location_providers">You have no location providers active, please turn on GPS or Network-based location detection</string>
     <string name="location_settings">Go to location settings</string>
     <string name="wait_for_location">Your location is not yet available. Please wait a moment until your location has been found</string>
@@ -56,5 +58,5 @@
     <string name="result">Result:</string>
 
 <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="hello_blank_fragment" translatable="false">Hello blank fragment</string>
 </resources>

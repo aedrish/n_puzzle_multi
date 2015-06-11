@@ -1,5 +1,6 @@
 package nl.han.s478026.bram.npuzzel;
 
+import android.app.AlertDialog;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Context;
@@ -30,6 +31,7 @@ import com.firebase.geofire.GeoLocation;
 import com.firebase.geofire.GeoQuery;
 import com.firebase.geofire.GeoQueryEventListener;
 
+import java.security.AllPermission;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -98,9 +100,7 @@ public class SelectDifficultyActivity extends ActionBarActivity implements Obser
                 System.out.println("The read failed: " + firebaseError.getMessage());
             }
         });
-
-
-
+        
         radiogroup = (RadioGroup) findViewById(R.id.radioGroup);
         for (Difficulty item: Difficulty.values()) {
             RadioButton rb = new RadioButton(SelectDifficultyActivity.this);
@@ -252,6 +252,7 @@ public class SelectDifficultyActivity extends ActionBarActivity implements Obser
         RadioButton radioButton = (RadioButton) findViewById(radiogroup.getCheckedRadioButtonId());
         return (String) radioButton.getText();
     }
+
 
     private void resetLocation() {
         locationUpdater.deleteObservers();
