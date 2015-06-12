@@ -29,8 +29,9 @@ android {
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile 'com.android.support:appcompat-v7:21.0.3'
+    compile 'com.android.support:appcompat-v7:22.2.0'
+    compile 'com.google.android.gms:play-services:7.5.0'
     compile 'com.firebase:firebase-client-android:2.3.0'
-    compile 'com.firebase:geofire:1.1.0+'
+    compile 'com.firebase:geofire:1.1.0'
 //    compile project(':firebase-client-android-2.2.4')
 }
