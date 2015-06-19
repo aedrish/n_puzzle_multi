@@ -10,6 +10,7 @@ import android.graphics.Point;
 import android.os.CountDownTimer;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.util.Pair;
 import android.view.Display;
 import android.view.Gravity;
@@ -65,7 +66,8 @@ public class GamePlayActivity extends ActionBarActivity {
     private int score;
 
     private SharedPreferences sharedpreferences;
-    private Firebase myFirebaseRef, isDone, enemyScore;
+    private Firebase myFirebaseRef;
+    private Firebase isDone;
 
     private boolean isPlaying = false;
 
@@ -73,7 +75,6 @@ public class GamePlayActivity extends ActionBarActivity {
     private String userName;
 
     private GridView layout, layout2;
-    private ValueEventListener eventListener;
     private CountDownTimer countDown;
     private Boolean enemyIsFinished = false;
 
@@ -98,6 +99,7 @@ public class GamePlayActivity extends ActionBarActivity {
 
         Intent intent = getIntent();
         resourceId = intent.getIntExtra("resourceId", 0);
+        Log.d("resourceID", resourceId + "");
         String difficulty = intent.getStringExtra("difficulty");
         enemyUser = intent.getStringExtra("enemy");
 
@@ -265,9 +267,8 @@ public class GamePlayActivity extends ActionBarActivity {
         layout2.setAdapter(imageAdapterEnemy);
 
         Firebase enemy = myFirebaseRef.child("users/" + enemyUser + "/clicked_tile");
-
             // Attach an listener to read the data at our posts reference
-            eventListener = enemy.addValueEventListener(new ValueEventListener() {
+            enemy.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot snapshot) {
                     if(snapshot.getValue() != null) {
@@ -338,11 +339,11 @@ public class GamePlayActivity extends ActionBarActivity {
     }
 
     private void GoToWinScreen() {
-        enemyScore = myFirebaseRef.child("users/" + enemyUser + "/score");
+        Firebase enemyScore = myFirebaseRef.child("users/" + enemyUser + "/score");
         enemyScore.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                if((long) dataSnapshot.getValue() > 0) {
+                if ((long) dataSnapshot.getValue() > 0) {
                     final Intent intent = new Intent(GamePlayActivity.this, YouWinActivity.class);
                     intent.putExtra("yourScore", score);
                     intent.putExtra("yourUserName", userName);
@@ -507,5 +508,7 @@ public class GamePlayActivity extends ActionBarActivity {
         myFirebaseRef.child("users/" + userName + "/finished").removeValue();
         myFirebaseRef.child("users/" + userName + "/usedSteps").removeValue();
         myFirebaseRef.child("users/" + userName + "/difficulty").removeValue();
+        myFirebaseRef.child("users/" + userName + "/time_of_search").removeValue();
+        myFirebaseRef.child("users/" + userName + "/selected_image").removeValue();
     }
 }

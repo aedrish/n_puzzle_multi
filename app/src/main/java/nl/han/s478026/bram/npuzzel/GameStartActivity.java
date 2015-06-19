@@ -17,7 +17,11 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
 
+import com.firebase.client.ChildEventListener;
+import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
+import com.firebase.client.FirebaseError;
+import com.firebase.client.ValueEventListener;
 import com.firebase.geofire.GeoFire;
 
 import java.lang.reflect.Field;
@@ -36,57 +40,75 @@ public class GameStartActivity extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        final GeoFire geoFire = new GeoFire(new Firebase("https://n-puzzle-bram-daniel.firebaseio.com/playersWaiting"));
         SharedPreferences sharedpreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
-//        geoFire.removeLocation(sharedpreferences.getString(USERNAME, null));
-
-        setContentView(R.layout.activity_image_selection);
-        Display display = getWindowManager().getDefaultDisplay();
-        Point size = new Point();
-
-        display.getSize(size);
-        int width = size.x;
-        int height = size.y;
-
         Intent intent = getIntent();
-
         difficulty = intent.getStringExtra("difficulty");
         enemyUser = intent.getStringExtra("enemy");
 
-        GridView layout = (GridView)findViewById(R.id.gridView2);
-        layout.setNumColumns(ROWS);
-        layout.setScrollingCacheEnabled(false);
+        if (intent.getStringExtra("pickImage").equals("yes")) {
+            setContentView(R.layout.activity_image_selection);
+            Display display = getWindowManager().getDefaultDisplay();
+            Point size = new Point();
 
-        Field[] afbeeldingResources = R.drawable.class.getFields();
-        for (Field f : afbeeldingResources) {
-            if (f.getName().contains("game_")) {
-                try {
-                    String name = f.getName();
-                    int resourceId = f.getInt(null);
+            display.getSize(size);
+            int width = size.x;
+            int height = size.y;
 
-                    Bitmap bitmap = BitmapFactory.decodeResource(getResources(), resourceId);
-                    ImageItem item  = new ImageItem(resourceId, name, bitmap);
-                    imageList.add(item);
-                } catch (Exception e) {
-                    Log.e("MAD", "### OOPS", e);
+            GridView layout = (GridView) findViewById(R.id.gridView2);
+            layout.setNumColumns(ROWS);
+            layout.setScrollingCacheEnabled(false);
+
+            Field[] afbeeldingResources = R.drawable.class.getFields();
+            for (Field f : afbeeldingResources) {
+                if (f.getName().contains("game_")) {
+                    try {
+                        String name = f.getName();
+                        int resourceId = f.getInt(null);
+
+                        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), resourceId);
+                        ImageItem item = new ImageItem(resourceId, name, bitmap);
+                        imageList.add(item);
+                    } catch (Exception e) {
+                        Log.e("MAD", "### OOPS", e);
+                    }
                 }
             }
+
+            final MainCustomGridViewAdapter imageAdapter = new MainCustomGridViewAdapter(this, R.layout.row_grid_main, imageList, ROWS, (int) (width * 0.8));
+            layout.setAdapter(imageAdapter);
+            layout.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    Log.d("Resource id", "" + imageList.get(position).getResourceId());
+                    Intent intent = new Intent(GameStartActivity.this, GamePlayActivity.class);
+                    intent.putExtra("resourceId", imageList.get(position).getResourceId());
+                    intent.putExtra("difficulty", difficulty);
+                    intent.putExtra("enemy", enemyUser);
+                    startActivity(intent);
+                    finish();
+                }
+            });
+        }else{
+            setContentView(R.layout.opponent_picking_image);
+            Firebase selectedImageRef = new Firebase("https://n-puzzle-bram-daniel.firebaseio.com/users/"+enemyUser+"/selected_image");
+            selectedImageRef.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    Log.d("Image resource id = ", ""+ dataSnapshot.getValue());
+                    Intent intent = new Intent(GameStartActivity.this, GamePlayActivity.class);
+                    intent.putExtra("resourceId", Integer.parseInt(dataSnapshot.getValue().toString()));
+                    intent.putExtra("difficulty", difficulty);
+                    intent.putExtra("enemy", enemyUser);
+                    startActivity(intent);
+                    finish();
+                }
+
+                @Override
+                public void onCancelled(FirebaseError firebaseError) {
+
+                }
+            });
         }
-
-        final MainCustomGridViewAdapter imageAdapter = new MainCustomGridViewAdapter(this, R.layout.row_grid_main, imageList, ROWS, (int) (width * 0.8));
-        layout.setAdapter(imageAdapter);
-        layout.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-                Intent intent = new Intent(GameStartActivity.this, GamePlayActivity.class);
-                intent.putExtra("resourceId", imageList.get(position).getResourceId());
-                intent.putExtra("difficulty", difficulty);
-                intent.putExtra("enemy", enemyUser);
-                startActivity(intent);
-                finish();
-            }
-        });
     }
 
     private int changePixelToDP(int input) {

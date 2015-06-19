@@ -20,6 +20,7 @@ import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
+import com.firebase.client.ChildEventListener;
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
@@ -29,10 +30,12 @@ import com.firebase.geofire.GeoLocation;
 import com.firebase.geofire.GeoQuery;
 import com.firebase.geofire.GeoQueryEventListener;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Observable;
 import java.util.Observer;
-import java.util.Random;
 
 
 public class SelectDifficultyActivity extends ActionBarActivity implements Observer {
@@ -46,7 +49,7 @@ public class SelectDifficultyActivity extends ActionBarActivity implements Obser
     private String userName;
 
     private HistoryFragment historyFragment = new HistoryFragment();
-
+    private WaitingDialog noLocationDialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -149,20 +152,18 @@ public class SelectDifficultyActivity extends ActionBarActivity implements Obser
             @Override
             public void onClick(View view) {
                 if (!hasActiveProvider) {
-                    Log.d("Size of OpponentList", "No active provider");
                     locationUpdater.checkIfAnyLocationProviderIsActive();
                 } else if (currentLocation != null) {
-                    Log.d("Size of OpponentList", "current location");
                     executeOpponentSearch();
                 } else {
-                    WaitingDialog noLocationDialog = new WaitingDialog(SelectDifficultyActivity.this, getString(R.string.no_location_available), getString(R.string.wait_for_location));
+                    noLocationDialog = new WaitingDialog(SelectDifficultyActivity.this, getString(R.string.no_location_available), getString(R.string.wait_for_location));
                 }
             }
         });
     }
 
     private void executeOpponentSearch() {
-        Log.d("Size of OpponentList", "Searching");
+        //TO-DO: Remove date from firebase, dismiss waitingdialog here
         final String difficulty = getDifficulty();
         final Intent intent = new Intent(SelectDifficultyActivity.this, GameStartActivity.class);
         intent.putExtra("difficulty", difficulty);
@@ -189,13 +190,16 @@ public class SelectDifficultyActivity extends ActionBarActivity implements Obser
                         public void onDataChange(DataSnapshot dataSnapshot) {
                             String enemyDifficulty = (String) dataSnapshot.getValue();
                             if (enemyDifficulty.equals(difficulty)) {
-                                if(opponentList.size() == 0) {
+                                if (opponentList.size() == 0) {
                                     opponentList.add(key);
-                                    waitingDialog.dismiss();
                                     intent.putExtra("enemy", key);
                                     geoQuery.removeAllListeners();
                                     geoFire.removeLocation(userName);
-                                    startActivity(intent);
+                                    try {
+                                        needToPickImage(intent, key, waitingDialog);
+                                    } catch (ParseException e) {
+                                        e.printStackTrace();
+                                    }
                                 }
                             }
                         }
@@ -221,6 +225,41 @@ public class SelectDifficultyActivity extends ActionBarActivity implements Obser
 
             @Override
             public void onGeoQueryError(FirebaseError error) {
+            }
+        });
+    }
+
+    private void needToPickImage(final Intent intent, String opponentName, final WaitingDialog waitingDialog) throws ParseException {
+        Firebase firebaseRef = new Firebase("https://n-puzzle-bram-daniel.firebaseio.com/users/");
+        final SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss");
+
+        final String selfDateString = sdf.format(new Date());
+        final Date selfDate = sdf.parse(selfDateString);
+        firebaseRef.child(userName+"/time_of_search").setValue(selfDateString);
+
+        firebaseRef.child(opponentName+"/time_of_search").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Log.d("Data of oopponent", "added");
+                String opponentDateString = dataSnapshot.getValue().toString();
+                Date opponentDate = null;
+                try {
+                    opponentDate = sdf.parse(opponentDateString);
+                    if (opponentDate.before(selfDate)) {
+                        intent.putExtra("pickImage", "yes");
+                    } else {
+                        intent.putExtra("pickImage", "no");
+                    }
+                    waitingDialog.dismiss();
+                    startActivity(intent);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+
             }
         });
     }
@@ -253,6 +292,11 @@ public class SelectDifficultyActivity extends ActionBarActivity implements Obser
     @Override
     public void update(Observable observable, Object o) {
         if (o instanceof Location) {
+            try {
+                noLocationDialog.dismiss();
+            }catch( Exception e){
+
+            }
             currentLocation = (Location) o;
         } else if (o instanceof String) {
             switch (o.toString()) {
