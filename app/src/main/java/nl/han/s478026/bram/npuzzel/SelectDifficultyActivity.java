@@ -32,6 +32,7 @@ import com.firebase.geofire.GeoQueryEventListener;
 import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.Random;
 
 
 public class SelectDifficultyActivity extends ActionBarActivity implements Observer {
@@ -148,8 +149,10 @@ public class SelectDifficultyActivity extends ActionBarActivity implements Obser
             @Override
             public void onClick(View view) {
                 if (!hasActiveProvider) {
+                    Log.d("Size of OpponentList", "No active provider");
                     locationUpdater.checkIfAnyLocationProviderIsActive();
                 } else if (currentLocation != null) {
+                    Log.d("Size of OpponentList", "current location");
                     executeOpponentSearch();
                 } else {
                     WaitingDialog noLocationDialog = new WaitingDialog(SelectDifficultyActivity.this, getString(R.string.no_location_available), getString(R.string.wait_for_location));
@@ -159,6 +162,7 @@ public class SelectDifficultyActivity extends ActionBarActivity implements Obser
     }
 
     private void executeOpponentSearch() {
+        Log.d("Size of OpponentList", "Searching");
         final String difficulty = getDifficulty();
         final Intent intent = new Intent(SelectDifficultyActivity.this, GameStartActivity.class);
         intent.putExtra("difficulty", difficulty);
@@ -170,14 +174,14 @@ public class SelectDifficultyActivity extends ActionBarActivity implements Obser
     }
 
     private void handleGeoQuery(final Intent intent, final String difficulty) {
+        Log.d("Size of OpponentList", "Handling Query");
         final WaitingDialog waitingDialog = new WaitingDialog(SelectDifficultyActivity.this, getString(R.string.searching_opponent), getString(R.string.locating_opponent));
         final GeoFire geoFire = new GeoFire(new Firebase("https://n-puzzle-bram-daniel.firebaseio.com/playersWaiting"));
         final GeoQuery geoQuery = getGeoQuery(geoFire);
-
+        final ArrayList<String> opponentList = new ArrayList<>();
         geoQuery.addGeoQueryEventListener(new GeoQueryEventListener() {
             @Override
             public void onKeyEntered(final String key, GeoLocation location) {
-                Log.d("geoFire", "username is " + key);
                 if (!userName.equals(key)) {
                     Firebase enemyRef = new Firebase("https://n-puzzle-bram-daniel.firebaseio.com/users/" + key + "/difficulty");
                     enemyRef.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -185,12 +189,14 @@ public class SelectDifficultyActivity extends ActionBarActivity implements Obser
                         public void onDataChange(DataSnapshot dataSnapshot) {
                             String enemyDifficulty = (String) dataSnapshot.getValue();
                             if (enemyDifficulty.equals(difficulty)) {
-                                geoQuery.removeAllListeners();
-                                waitingDialog.dismiss();
-                                intent.putExtra("enemy", key);
-
-                                geoFire.removeLocation(userName);
-                                startActivity(intent);
+                                if(opponentList.size() == 0) {
+                                    opponentList.add(key);
+                                    waitingDialog.dismiss();
+                                    intent.putExtra("enemy", key);
+                                    geoQuery.removeAllListeners();
+                                    geoFire.removeLocation(userName);
+                                    startActivity(intent);
+                                }
                             }
                         }
 
