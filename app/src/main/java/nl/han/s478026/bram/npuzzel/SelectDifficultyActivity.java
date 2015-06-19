@@ -20,7 +20,6 @@ import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
-import com.firebase.client.ChildEventListener;
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
@@ -163,7 +162,6 @@ public class SelectDifficultyActivity extends ActionBarActivity implements Obser
     }
 
     private void executeOpponentSearch() {
-        //TO-DO: Remove date from firebase, dismiss waitingdialog here
         final String difficulty = getDifficulty();
         final Intent intent = new Intent(SelectDifficultyActivity.this, GameStartActivity.class);
         intent.putExtra("difficulty", difficulty);
@@ -175,7 +173,6 @@ public class SelectDifficultyActivity extends ActionBarActivity implements Obser
     }
 
     private void handleGeoQuery(final Intent intent, final String difficulty) {
-        Log.d("Size of OpponentList", "Handling Query");
         final WaitingDialog waitingDialog = new WaitingDialog(SelectDifficultyActivity.this, getString(R.string.searching_opponent), getString(R.string.locating_opponent));
         final GeoFire geoFire = new GeoFire(new Firebase("https://n-puzzle-bram-daniel.firebaseio.com/playersWaiting"));
         final GeoQuery geoQuery = getGeoQuery(geoFire);
@@ -240,7 +237,6 @@ public class SelectDifficultyActivity extends ActionBarActivity implements Obser
         firebaseRef.child(opponentName+"/time_of_search").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                Log.d("Data of oopponent", "added");
                 String opponentDateString = dataSnapshot.getValue().toString();
                 Date opponentDate = null;
                 try {
@@ -267,7 +263,6 @@ public class SelectDifficultyActivity extends ActionBarActivity implements Obser
     private GeoQuery getGeoQuery(GeoFire geoFire) {
         GeoLocation myGeoLocation = new GeoLocation(currentLocation.getLatitude(), currentLocation.getLongitude());
         geoFire.setLocation(userName, myGeoLocation);
-        Log.d("geoFire", "Radius : " + getRadius());
         return geoFire.queryAtLocation(myGeoLocation, getRadius());
     }
 
@@ -295,7 +290,7 @@ public class SelectDifficultyActivity extends ActionBarActivity implements Obser
             try {
                 noLocationDialog.dismiss();
             }catch( Exception e){
-
+                //Nothing needs to happen, because there is no Location Dialog at this time so it can't be dismissed
             }
             currentLocation = (Location) o;
         } else if (o instanceof String) {

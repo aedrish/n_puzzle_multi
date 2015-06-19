@@ -34,7 +34,6 @@ public class LocationUpdater extends Observable {
 
         locationListener = new LocationListener() {
             public void onLocationChanged(Location location) {
-//                Toast.makeText(parentContext, "Updated location to " + location.getLatitude(), Toast.LENGTH_SHORT).show();
                 setChanged();
                 notifyObservers(location);
             }

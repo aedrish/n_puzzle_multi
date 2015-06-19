@@ -33,7 +33,6 @@ public class HistoryFragment extends Fragment {
         if(bundle != null) {
             url = bundle.getString("url");
 
-            //        String key = getArguments().getString("key");
             Firebase.setAndroidContext(container.getContext());
             Firebase myFirebaseRef = new Firebase(url);
             final ArrayList<HistoryFragmentRowItem> data = new ArrayList<>();

@@ -81,7 +81,6 @@ public class MainActivity extends ActionBarActivity {
 
                         }
                     });
-//                    saveUserAndIntent(userRefs);
                 }
             });
         }
